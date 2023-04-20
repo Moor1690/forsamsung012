@@ -34,7 +34,7 @@ fun Navigate(navController: NavHostController,
                     }
                 }*/
                 composable(route = "ListScreen") {
-                        ListScreen(navController = navController)
+                        ListScreen(navController = navController, context = context)
                         isShowBottomBar.value = false
                     }
             })
