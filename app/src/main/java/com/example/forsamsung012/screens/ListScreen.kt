@@ -84,7 +84,8 @@ fun ListScreen(navController: NavHostController, context: Context) {
             Text(text = "text3")
         }
     ) {
-        Column{
+    LazyColumn{
+        items(15){
             Box(
                 modifier = Modifier
                     .clip(shape = RoundedCornerShape(10.dp))
@@ -117,6 +118,40 @@ fun ListScreen(navController: NavHostController, context: Context) {
                 )
             }
         }
+    }
+    /*Column{
+            Box(
+                modifier = Modifier
+                    .clip(shape = RoundedCornerShape(10.dp))
+                    .padding(8.dp)
+                    .background(Color.Red)
+                    .fillMaxWidth()
+                    .heightIn(80.dp)
+                    .swipeable(
+                        state = swipeableState,
+                        anchors = mapOf(
+                            0f to 0,
+                            -dpToPX(context = context, dpValue = 100f) to 1,
+                            dpToPX(context = context, dpValue = 100f) to 2
+                        ),
+                        thresholds = { _, _ -> FractionalThreshold(0.3f) },
+                        orientation = Orientation.Horizontal
+                    )
+            ) {
+                Button(onClick = { *//*TODO*//* }) {
+                    Text(text = "btn")
+                }
+                Box(modifier = Modifier
+                    .offset {
+                        IntOffset(swipeableState.offset.value.roundToInt(), 0)
+                    }
+                    //.clip(shape = RoundedCornerShape(10.dp))
+                    .fillMaxWidth()
+                    .heightIn(80.dp)
+                    .background(Color.Green)
+                )
+            }
+        }*/
 
 
     }
