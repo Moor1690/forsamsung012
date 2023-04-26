@@ -8,6 +8,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,16 +20,20 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.magnifier
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomAppBar
 import androidx.compose.material.DismissDirection
 import androidx.compose.material.DismissValue
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.FractionalThreshold
 import androidx.compose.material.Icon
+import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarDefaults.backgroundColor
 import androidx.compose.material.SwipeToDismiss
@@ -66,8 +71,12 @@ import androidx.compose.material.SwipeToDismiss
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.rememberDismissState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "UnusedMaterialScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
@@ -75,10 +84,9 @@ import androidx.compose.ui.draw.scale
 fun ListScreen(navController: NavHostController, context: Context) {
 
     data class User(var name: String = "", var age: Int = 0){
-        
     }
 
-    val password = remember { mutableStateOf("") }
+    val password = remember { mutableStateListOf("") }
     //Text(text = "List Screen")
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
@@ -88,7 +96,9 @@ fun ListScreen(navController: NavHostController, context: Context) {
     person1.age = 10
     person2.age = 20
 
-    var itemsList = mutableListOf<User>()
+    var itemsList = remember {
+        mutableStateListOf<User>()
+    }
     var itemsList2 = mutableListOf<String>()
     itemsList2.add("asdasd")
     itemsList2.add("qe")
@@ -120,7 +130,16 @@ fun ListScreen(navController: NavHostController, context: Context) {
     //itemsList2[1].
 
     Scaffold(
-        Modifier.background(color = Color.Red),
+        floatingActionButton = {
+            Button(onClick = { navController.navigate("TaskScreen")},modifier = Modifier.clip(CircleShape).size(50.dp)) {
+                Icon(Icons.Filled.Add, contentDescription = "Добавить", modifier = Modifier.size(50.dp))
+            }
+            /*FloatingActionButton(onClick = { navController.navigate("TaskScreen") }) {
+                *//* FAB content *//*
+                Icon(Icons.Filled.Add, contentDescription = "Добавить")
+            }*/
+        },
+        modifier = Modifier.background(color = Color.Red),
         scaffoldState = scaffoldState,
         drawerBackgroundColor = backgroundColor,
         backgroundColor = backgroundColor,
@@ -141,16 +160,23 @@ fun ListScreen(navController: NavHostController, context: Context) {
         }
     ) {
 
+
+        var isSwipeRemoved by remember{
+            mutableStateOf(false)
+        }
+
         LazyColumn {
             items(itemsList) { item ->
                 //val currentItem by rememberUpdatedState(item)
                 val dismissState = rememberDismissState(
                     confirmStateChange = {
                         if (it == DismissValue.DismissedToEnd){
-                            //todo
+                            itemsList.remove(item)
+                            isSwipeRemoved = true
                         }
                         else if (it == DismissValue.DismissedToStart){
-                            //todo
+                            itemsList.remove(item)
+                            isSwipeRemoved = true
                         }
                         true
                     }
@@ -181,7 +207,7 @@ fun ListScreen(navController: NavHostController, context: Context) {
 
                             Box(modifier = Modifier
                                 .fillMaxSize()
-                                .background(color)
+                                //.background(color)
                                 .padding(12.dp),
                                 contentAlignment = alignment) {
                                 Icon(icon, contentDescription = "icon", modifier = Modifier.scale(scale))
@@ -190,9 +216,10 @@ fun ListScreen(navController: NavHostController, context: Context) {
                         dismissContent = {
                             Card(modifier = Modifier
                                 .fillMaxWidth()
-                                .heightIn(80.dp)
+                                .heightIn(110.dp)
                                 .padding(8.dp)) {
-                            Text(text = item.name)
+                                Text(text = item.name, fontSize = 25.sp, fontWeight = FontWeight.Bold, color = Color.White, modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp))
+                                Text(text =  item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name,  color = Color.White, modifier = Modifier.padding(horizontal = 8.dp, vertical = 0.dp), maxLines = 2)
                             }
                         }
                 )

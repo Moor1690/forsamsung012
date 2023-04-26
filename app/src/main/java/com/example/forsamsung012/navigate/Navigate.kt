@@ -8,6 +8,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.Navigation
 import com.example.forsamsung012.screens.ListScreen
 import com.example.forsamsung012.screens.SigInScreen
+import com.example.forsamsung012.screens.TaskScreen
 import com.example.forsamsung012.ui.theme.Forsamsung012Theme
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
@@ -37,6 +38,10 @@ fun Navigate(navController: NavHostController,
                         ListScreen(navController = navController, context = context)
                         isShowBottomBar.value = false
                     }
+                composable(route = "TaskScreen") {
+                    TaskScreen(navController = navController, context = context)
+                    isShowBottomBar.value = true
+                }
             })
     }
 }
