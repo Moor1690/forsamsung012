@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.ClipData.Item
 import android.content.Context
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.Image
@@ -83,23 +84,44 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun ListScreen(navController: NavHostController, context: Context) {
 
-    data class User(var name: String = "", var age: Int = 0){
+    data class User(var name: String = "", var age: Int = 0, val key: Int){
     }
 
-    val password = remember { mutableStateListOf("") }
     //Text(text = "List Screen")
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
-    val swipeableState = rememberSwipeableState(initialValue = 0)
-    val person1 = User("John")
-    val person2 = User("Johan2")
+    val person1 = User("Johntest", key = 15)
+    val person2 = User("Johan2", key = 2)
+    val person3 = User("person3", key = 3)
+    val person4 = User("person4", key = 4)
+    val person5 = User("person5", key = 5)
+    val person6 = User("person6", key = 6)
+    val person7 = User("person7", key = 7)
+    val person8 = User("person8", key = 8)
+    val person9 = User("person9", key = 9)
+    val person10 = User("person10", key = 10)
+    val person11 = User("person11", key = 11)
+    val person12 = User("Johan2", key = 12)
+    val person13 = User("John", key = 13)
+    val person14 = User("Johan2", key = 14)
     person1.age = 10
     person2.age = 20
 
     var itemsList = remember {
-        mutableStateListOf<User>()
+        mutableStateListOf<User>(
+            /*User("John", key = 1),
+            User("Johan2", key = 2),
+            User("person3", key = 3),
+            User("person4", key = 4),
+            User("person5", key = 5),
+            User("person6", key = 6),
+            User("person7", key = 7),
+            User("person8", key = 8),
+            User("person9", key = 9)*/
+        )
     }
-    var itemsList2 = mutableListOf<String>()
+    //itemsList.add(person1)
+    /*var itemsList2 = mutableListOf<String>()
     itemsList2.add("asdasd")
     itemsList2.add("qe")
     itemsList2.add("asasadsddasd")
@@ -113,25 +135,26 @@ fun ListScreen(navController: NavHostController, context: Context) {
     itemsList2.add("asdqweasd")
     itemsList2.add("asdasdxazasd")
     itemsList2.add("asdaasdqg2334sd")
-    itemsList2.add("as12335dasd")
+    itemsList2.add("as12335dasd")*/
     itemsList.add(person1)
     itemsList.add(person2)
-    itemsList.add(person1)
-    itemsList.add(person2)
-    itemsList.add(person1)
-    itemsList.add(person2)
-    itemsList.add(person1)
-    itemsList.add(person2)
-    itemsList.add(person1)
-    itemsList.add(person2)
-    itemsList.add(person1)
-    itemsList.add(person2)
+    itemsList.add(person3)
+    itemsList.add(person4)
+    itemsList.add(person5)
+    itemsList.add(person6)
+    itemsList.add(person7)
+    itemsList.add(person8)
+    itemsList.add(person9)
+    itemsList.add(person10)
+    itemsList.add(person11)
 
     //itemsList2[1].
 
     Scaffold(
         floatingActionButton = {
-            Button(onClick = { navController.navigate("TaskScreen")},modifier = Modifier.clip(CircleShape).size(50.dp)) {
+            Button(onClick = { navController.navigate("TaskScreen")},modifier = Modifier
+                .clip(CircleShape)
+                .size(50.dp)) {
                 Icon(Icons.Filled.Add, contentDescription = "Добавить", modifier = Modifier.size(50.dp))
             }
             /*FloatingActionButton(onClick = { navController.navigate("TaskScreen") }) {
@@ -154,9 +177,13 @@ fun ListScreen(navController: NavHostController, context: Context) {
         },
         drawerGesturesEnabled = scaffoldState.drawerState.isOpen,
         drawerContent = {
-            Text(text = "text1")
-            Text(text = "text2")
-            Text(text = "text3")
+            Column() {
+                Icon(Icons.Default.Add, contentDescription = null)
+                Text(text = "text1")
+                Text(text = "text2")
+                Text(text = "text3")
+            }
+
         }
     ) {
 
@@ -166,9 +193,9 @@ fun ListScreen(navController: NavHostController, context: Context) {
         }
 
         LazyColumn {
-            items(itemsList) { item ->
+            items(itemsList, {it.key}) { item ->
                 //val currentItem by rememberUpdatedState(item)
-                val dismissState = rememberDismissState(
+                val dismissState = rememberDismissState(//rememberDismissState(
                     confirmStateChange = {
                         if (it == DismissValue.DismissedToEnd){
                             itemsList.remove(item)
@@ -182,9 +209,11 @@ fun ListScreen(navController: NavHostController, context: Context) {
                     }
                 )
 
-                SwipeToDismiss(state = dismissState,
+                SwipeToDismiss(
+                    state = dismissState,
                     directions = setOf(DismissDirection.StartToEnd,
                         DismissDirection.EndToStart),
+                        dismissThresholds = {FractionalThreshold(0.5f)},
                         background = {
                             val direction = dismissState.dismissDirection ?: return@SwipeToDismiss
                             val color by animateColorAsState(targetValue = when(dismissState.targetValue){
@@ -207,6 +236,14 @@ fun ListScreen(navController: NavHostController, context: Context) {
 
                             Box(modifier = Modifier
                                 .fillMaxSize()
+                                .background(color)
+                                .padding(12.dp),
+                                contentAlignment = alignment
+                            ){
+                                Icon(icon, contentDescription = "icon", modifier = Modifier.scale(scale), tint = Color.Black)
+                            }
+                            Box(modifier = Modifier
+                                .fillMaxSize()
                                 //.background(color)
                                 .padding(12.dp),
                                 contentAlignment = alignment) {
@@ -214,13 +251,30 @@ fun ListScreen(navController: NavHostController, context: Context) {
                             }
                         },
                         dismissContent = {
-                            Card(modifier = Modifier
-                                .fillMaxWidth()
-                                .heightIn(110.dp)
-                                .padding(8.dp)) {
-                                Text(text = item.name, fontSize = 25.sp, fontWeight = FontWeight.Bold, color = Color.White, modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp))
-                                Text(text =  item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name,  color = Color.White, modifier = Modifier.padding(horizontal = 8.dp, vertical = 0.dp), maxLines = 2)
+                            androidx.compose.material.Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .heightIn(110.dp)
+                                    .padding(8.dp),
+                                backgroundColor = backgroundColor,
+                                elevation = animateDpAsState(targetValue = if (dismissState.dismissDirection != null) 4.dp else 0.dp).value
+                            ) {
+                                //Text(text = item.name, fontSize = 25.sp, fontWeight = FontWeight.Bold, color = Color.White, modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp))
+                                //Text(text =  item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name,  color = Color.White, modifier = Modifier.padding(horizontal = 8.dp, vertical = 0.dp), maxLines = 2)
+
+                                Card(
+
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .heightIn(110.dp)
+                                        .padding(8.dp)
+                                ) {
+                                    Text(text = item.name, fontSize = 25.sp, fontWeight = FontWeight.Bold, color = Color.White, modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp))
+                                    Text(text =  item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name,  color = Color.White, modifier = Modifier.padding(horizontal = 8.dp, vertical = 0.dp), maxLines = 2)
+                                }
                             }
+                            
+
                         }
                 )
 
