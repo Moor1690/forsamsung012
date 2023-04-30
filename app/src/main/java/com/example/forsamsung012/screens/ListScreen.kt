@@ -78,11 +78,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.example.forsamsung012.model.TaskModel
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "UnusedMaterialScaffoldPaddingParameter")
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "UnusedMaterialScaffoldPaddingParameter",
+    "UnrememberedMutableState"
+)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun ListScreen(navController: NavHostController, context: Context) {
+
+
+    val userData = mutableStateOf<List<TaskModel>>(listOf()) //this is list of user tasks
 
     data class User(var name: String = "", var age: Int = 0, val key: Int){
     }
@@ -136,6 +142,7 @@ fun ListScreen(navController: NavHostController, context: Context) {
     itemsList2.add("asdasdxazasd")
     itemsList2.add("asdaasdqg2334sd")
     itemsList2.add("as12335dasd")*/
+    itemsList.clear()
     itemsList.add(person1)
     itemsList.add(person2)
     itemsList.add(person3)

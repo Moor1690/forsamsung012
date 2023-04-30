@@ -12,17 +12,29 @@ import com.example.forsamsung012.screens.TaskScreen
 import com.example.forsamsung012.ui.theme.Forsamsung012Theme
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun Navigate(navController: NavHostController,
+fun Navigate(cUser: FirebaseUser?,
+             auth : FirebaseAuth,
+             navController: NavHostController,
              context: Context,
              isShowBottomBar: MutableState<Boolean>
 ){
     Forsamsung012Theme{
+        var start: String
+        if (cUser == null){
+            start = "SigInScreen"
+        } else {
+            start= "ListScreen"
+        }
+
+
         AnimatedNavHost(
             navController = navController,
-            startDestination = "ListScreen"/*"SigInScreen"*/,
+            startDestination = start,///*"ListScreen"*/"SigInScreen",
             builder = {
                 composable(route = "SigInScreen") {
                         SigInScreen(navController = navController, context = context)
@@ -45,3 +57,4 @@ fun Navigate(navController: NavHostController,
             })
     }
 }
+

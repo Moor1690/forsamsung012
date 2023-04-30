@@ -20,9 +20,13 @@ import androidx.navigation.NavHostController
 import com.example.forsamsung012.navigate.Navigate
 import com.example.forsamsung012.ui.theme.Forsamsung012Theme
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import com.google.firebase.auth.FirebaseAuth
 
 
 class MainActivity : ComponentActivity() {
+
+    var auth: FirebaseAuth = FirebaseAuth.getInstance()
+    var cUser = auth.currentUser
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     @OptIn(ExperimentalAnimationApi::class, ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,7 +40,10 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize()//,
                     //color = MaterialTheme.colorScheme.background
                 ) {
+
                     Navigate(
+                        cUser = cUser,
+                        auth = auth,
                         navController = navController,
                         context = this,
                         isShowBottomBar = isShowBottomBar
