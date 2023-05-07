@@ -1,6 +1,7 @@
 package com.example.forsamsung012.navigate
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -14,21 +15,27 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun Navigate(cUser: FirebaseUser?,
+             database: FirebaseDatabase,
              auth : FirebaseAuth,
              navController: NavHostController,
              context: Context,
-             isShowBottomBar: MutableState<Boolean>
+             isShowBottomBar: MutableState<Boolean>,
+             databaseReference: DatabaseReference,
+             firebaseRemoteConfig: FirebaseRemoteConfig
 ){
     Forsamsung012Theme{
         var start: String
         if (cUser == null){
             start = "SigInScreen"
         } else {
-            start= "ListScreen"
+            start = "ListScreen"
         }
 
 
@@ -37,7 +44,7 @@ fun Navigate(cUser: FirebaseUser?,
             startDestination = start,///*"ListScreen"*/"SigInScreen",
             builder = {
                 composable(route = "SigInScreen") {
-                        SigInScreen(navController = navController, context = context)
+                        SigInScreen(auth = auth, cUser = cUser,navController = navController, context = context)
                         isShowBottomBar.value = false
                 }
 /*                composable(route = "SignUpScreen") {
@@ -47,11 +54,13 @@ fun Navigate(cUser: FirebaseUser?,
                     }
                 }*/
                 composable(route = "ListScreen") {
-                        ListScreen(navController = navController, context = context)
+                    Log.d("qwertytag", cUser.toString())
+
+                        ListScreen(auth = auth, cUser = auth.currentUser!!, navController = navController, context = context)
                         isShowBottomBar.value = false
                     }
                 composable(route = "TaskScreen") {
-                    TaskScreen(navController = navController, context = context)
+                    TaskScreen(database = database, auth = auth, navController = navController, context = context, firebaseRemoteConfig = firebaseRemoteConfig, databaseReference = databaseReference)
                     isShowBottomBar.value = true
                 }
             })

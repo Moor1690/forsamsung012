@@ -31,10 +31,15 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.forsamsung012.viewModel.SignInModel
 import com.example.forsamsung012.viewModel.SignUpModel
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 
 @Composable
-fun SigInScreen(navController: NavHostController, 
-                context: Context){
+fun SigInScreen(
+    auth: FirebaseAuth,
+    cUser: FirebaseUser?,
+    navController: NavHostController,
+    context: Context){
 
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
@@ -121,7 +126,7 @@ fun SigInScreen(navController: NavHostController,
         }, modifier = Modifier.padding(top = 5.dp)) { Text(text = "Registered") }
         // SignIn button
         Button(onClick = {
-            signInModel.signIn(email.value,password.value,context, navController)
+            signInModel.signIn(auth = auth, cUser = cUser,email.value,password.value,context, navController)
             // Authorized user login
             /*if (email.value.isNotEmpty() && password.value.isNotEmpty()) {
                 auth.signInWithEmailAndPassword(email.value, password.value)

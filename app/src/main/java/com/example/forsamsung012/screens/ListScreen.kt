@@ -3,6 +3,7 @@ package com.example.forsamsung012.screens
 import android.annotation.SuppressLint
 import android.content.ClipData.Item
 import android.content.Context
+import android.content.Intent
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -10,9 +11,12 @@ import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -70,6 +74,7 @@ import kotlin.math.roundToInt
 
 import androidx.compose.material.SwipeToDismiss
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.rememberDismissState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -78,14 +83,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.example.forsamsung012.MainActivity
 import com.example.forsamsung012.model.TaskModel
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "UnusedMaterialScaffoldPaddingParameter",
     "UnrememberedMutableState"
 )
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
-fun ListScreen(navController: NavHostController, context: Context) {
+fun ListScreen(
+    auth: FirebaseAuth,
+    cUser: FirebaseUser,
+    navController: NavHostController,
+    context: Context) {
 
 
     val userData = mutableStateOf<List<TaskModel>>(listOf()) //this is list of user tasks
@@ -185,7 +197,22 @@ fun ListScreen(navController: NavHostController, context: Context) {
         drawerGesturesEnabled = scaffoldState.drawerState.isOpen,
         drawerContent = {
             Column() {
-                Icon(Icons.Default.Add, contentDescription = null)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceAround
+                ) {
+                    androidx.compose.material3.Text(text = "${cUser.email}")
+                    //Text(text = "$logged ${cUser.email}")
+                    androidx.compose.material3.Icon(
+                        imageVector = Icons.Default.ExitToApp,
+                        contentDescription = "Log out",
+                        modifier = Modifier.clickable {
+                            auth.signOut()
+                            //cUser = auth.currentUser
+                            context.startActivity(Intent(context, MainActivity::class.java))
+                        })
+                }
                 Text(text = "text1")
                 Text(text = "text2")
                 Text(text = "text3")
