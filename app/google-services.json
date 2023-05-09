@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "864228853902",
+    "project_id": "forsamsung012",
+    "storage_bucket": "forsamsung012.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:864228853902:android:23c799cfc36964faf421df",
+        "android_client_info": {
+          "package_name": "com.example.forsamsung012"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "864228853902-dvia5kbihqfvbj28vrrg02nhk0tmurdn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.forsamsung012",
+            "certificate_hash": "12ab5973dabb2dd45566f7c9717d8280744a4bd4"
+          }
+        },
+        {
+          "client_id": "864228853902-30q7m1g7ah5sh5mkfoo2je160ebmro3r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCL7N8K8Gd9k4WmpIC27O0iD_77FFOePyo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "864228853902-30q7m1g7ah5sh5mkfoo2je160ebmro3r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

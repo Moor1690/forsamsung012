@@ -76,6 +76,7 @@ import androidx.compose.material.SwipeToDismiss
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.rememberDismissState
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.rememberUpdatedState
@@ -87,6 +88,7 @@ import com.example.forsamsung012.MainActivity
 import com.example.forsamsung012.model.TaskModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.DatabaseReference
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "UnusedMaterialScaffoldPaddingParameter",
     "UnrememberedMutableState"
@@ -94,13 +96,14 @@ import com.google.firebase.auth.FirebaseUser
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun ListScreen(
+    databaseReference: DatabaseReference,
+    userData: MutableState<List<TaskModel>>,
     auth: FirebaseAuth,
     cUser: FirebaseUser,
     navController: NavHostController,
     context: Context) {
 
 
-    val userData = mutableStateOf<List<TaskModel>>(listOf()) //this is list of user tasks
 
     data class User(var name: String = "", var age: Int = 0, val key: Int){
     }
@@ -227,16 +230,16 @@ fun ListScreen(
         }
 
         LazyColumn {
-            items(itemsList, {it.key}) { item ->
+            items(userData.value/*, {it.key.}*/) { item ->
                 //val currentItem by rememberUpdatedState(item)
                 val dismissState = rememberDismissState(//rememberDismissState(
                     confirmStateChange = {
                         if (it == DismissValue.DismissedToEnd){
-                            itemsList.remove(item)
+                            //itemsList.remove(item)
                             isSwipeRemoved = true
                         }
                         else if (it == DismissValue.DismissedToStart){
-                            itemsList.remove(item)
+                            //itemsList.remove(item)
                             isSwipeRemoved = true
                         }
                         true
