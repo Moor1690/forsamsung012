@@ -102,6 +102,7 @@ fun TaskScreen(
         backgroundColor = SnackbarDefaults.backgroundColor,
         floatingActionButton = {
             MultiFloatingButton(
+                context =context,
                 database = database,
                 auth = auth,
                 multiFloatingState = multiFloatingState,

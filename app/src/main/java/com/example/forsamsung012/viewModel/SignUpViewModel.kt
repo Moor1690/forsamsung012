@@ -4,7 +4,7 @@ import android.content.Context
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 
-class SignUpModel {
+class SignUpViewModel {
     private var auth: FirebaseAuth = FirebaseAuth.getInstance()
 
     fun sigUp(email: String, password: String, cont: Context?){

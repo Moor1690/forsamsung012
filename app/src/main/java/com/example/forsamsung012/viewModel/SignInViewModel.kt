@@ -6,11 +6,11 @@ import androidx.navigation.NavHostController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 
-class SignInModel {
+class SignInViewModel {
     //private var auth: FirebaseAuth = FirebaseAuth.getInstance()
     //var cUser = auth.currentUser
 
-    fun signIn(auth: FirebaseAuth, cUser:FirebaseUser? ,email: String, password: String, cont: Context?, navController: NavHostController){
+    fun signIn(auth: FirebaseAuth ,email: String, password: String, cont: Context?, navController: NavHostController){
         //navController.navigate("ListScreen")
 
         if(auth.currentUser == null){

@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'com.google.gms.google-services'
+    id 'kotlin-kapt'
 }
 
 android {
@@ -59,6 +60,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-config-ktx:21.3.0'
     implementation 'com.google.firebase:firebase-database-ktx:20.2.0'
     implementation 'com.google.firebase:firebase-storage-ktx:20.1.0'
+    implementation 'androidx.room:room-ktx:2.5.1'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
@@ -81,4 +83,8 @@ dependencies {
     implementation "com.google.accompanist:accompanist-systemuicontroller:0.27.0"
 
     implementation platform('com.google.firebase:firebase-bom:31.5.0')
+
+
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
+    kapt "androidx.room:room-compiler:2.5.0"
 }

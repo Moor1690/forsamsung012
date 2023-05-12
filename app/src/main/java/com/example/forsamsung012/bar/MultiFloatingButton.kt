@@ -1,5 +1,8 @@
 package com.example.forsamsung012.bar
 
+import android.annotation.SuppressLint
+import android.content.Context
+import android.util.Log
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.tween
@@ -25,11 +28,17 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.unit.dp
+import com.example.forsamsung012.model.TaskDAO
+import com.example.forsamsung012.model.TaskDatabase
 import com.example.forsamsung012.model.TaskModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.core.utilities.PushIdGenerator
+import com.google.firebase.database.snapshot.ChildKey
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
+import androidx.lifecycle.lifecycleScope
+import com.example.forsamsung012.model.M
 
 enum class MultiFloatingState{
     Expanded,
@@ -43,8 +52,10 @@ class MinFabItem(
 )
 
 
+@SuppressLint("RestrictedApi")
 @Composable
 fun MultiFloatingButton(
+    context: Context,
     database: FirebaseDatabase,
     auth: FirebaseAuth,
     multiFloatingState : MultiFloatingState,
@@ -95,11 +106,51 @@ fun MultiFloatingButton(
             }
         }
         FloatingActionButton(onClick = {
-            myRef.push().setValue(TaskModel(
-                key = "testadd",
+
+            /*fun pushM(): DatabaseReference? {
+                val childNameStr = PushIdGenerator.generatePushChildName(repo.getServerTime())
+                val childKey = ChildKey.fromString(childNameStr)
+                return DatabaseReference(repo, getPath().child(childKey))
+            }*/
+
+
+            //database.getReference("0/${auth.uid}/TASK/")
+            Log.d("myRef.path", myRef.path.toString())
+            var te = myRef.push()
+
+            var taskModel = TaskModel(
+                key = 10,
                 name = message1.value,
-                task = message2.value
-            ))
+                task = message2.value,
+                hash = "")
+
+
+            //private val projectDAOModel = AppDatabaseModel.getDatabase(context = application).projectDAO()
+
+            //private val repositoryModel = ProjectRepositoryModel(projectDAOModel = projectDAOModel)
+            val taskDAO = TaskDatabase.getDatabase(context = context).taskDAO()
+            val m = M(taskDAO)
+
+            //m.insertObject(taskModel)
+            /*lifecycleScope.launch {
+                taskDAO.insertObject(taskModel)
+            }*/
+            //taskDAO.insertObject(myObject = taskModel)
+
+
+
+
+            te.setValue(taskModel/*TaskModel(
+                key = 0,
+                name = message1.value,
+                task = message2.value,
+                hash = ""
+            )*/)
+            //te.path
+            Log.d("te.ref", te.ref.toString())
+            Log.d("te.substring(3,21)", te.path.toString().substring(37,te.path.toString().length))
+            Log.d("te.path", te.path.toString())
+            Log.d("te.repo", te.repo.toString())
             /*databaseReference.push().setValue(
                 TaskModel(
                     key = databaseReference.push().key,

@@ -5,9 +5,9 @@ import android.util.Log
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.navigation.NavHostController
 import androidx.navigation.Navigation
-import com.example.forsamsung012.getUserData
 import com.example.forsamsung012.model.TaskModel
 import com.example.forsamsung012.screens.ListScreen
 import com.example.forsamsung012.screens.SigInScreen
@@ -24,7 +24,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun Navigate(cUser: FirebaseUser?,
-             userData: MutableState<List<TaskModel>>,
+             userData: State<List<TaskModel>>/*MutableState<List<TaskModel>>*/,
              database: FirebaseDatabase,
              auth : FirebaseAuth,
              navController: NavHostController,
@@ -59,10 +59,6 @@ fun Navigate(cUser: FirebaseUser?,
                 composable(route = "ListScreen") {
                     Log.d("qwertytag", cUser.toString())
                     Log.d("TAG", "route = \"ListScreen\"")
-                    getUserData(
-                        databaseReference = databaseReference,
-                        userData = userData
-                    )
                         ListScreen(databaseReference = databaseReference,
                             userData = userData,auth = auth, cUser = auth.currentUser!!, navController = navController, context = context)
                         isShowBottomBar.value = false

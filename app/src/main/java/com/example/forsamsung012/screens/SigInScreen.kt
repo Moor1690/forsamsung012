@@ -1,8 +1,6 @@
 package com.example.forsamsung012.screens
 
 import android.content.Context
-import android.content.Intent
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -29,8 +27,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.forsamsung012.viewModel.SignInModel
-import com.example.forsamsung012.viewModel.SignUpModel
+import com.example.forsamsung012.viewModel.SignInViewModel
+import com.example.forsamsung012.viewModel.SignUpViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 
@@ -43,8 +41,8 @@ fun SigInScreen(
 
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
-    val signInModel: SignInModel = SignInModel()
-    val signUpModel: SignUpModel = SignUpModel()
+    val signInViewModel: SignInViewModel = SignInViewModel()
+    val signUpViewModel: SignUpViewModel = SignUpViewModel()
 
     Column(
         modifier = Modifier
@@ -101,7 +99,7 @@ fun SigInScreen(
         )
         // Registration button
         Button(onClick = {
-            signUpModel.sigUp(email.value,password.value,context)
+            signUpViewModel.sigUp(email.value,password.value,context)
             // Check the registration
             /*if (email.value.isNotEmpty() && password.value.isNotEmpty()) {
                 auth.createUserWithEmailAndPassword(email.value, password.value)
@@ -126,7 +124,7 @@ fun SigInScreen(
         }, modifier = Modifier.padding(top = 5.dp)) { Text(text = "Registered") }
         // SignIn button
         Button(onClick = {
-            signInModel.signIn(auth = auth, cUser = cUser,email.value,password.value,context, navController)
+            signInViewModel.signIn(auth = auth ,email.value, password.value, context, navController)
             // Authorized user login
             /*if (email.value.isNotEmpty() && password.value.isNotEmpty()) {
                 auth.signInWithEmailAndPassword(email.value, password.value)
