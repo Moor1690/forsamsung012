@@ -35,7 +35,6 @@ import com.google.firebase.auth.FirebaseUser
 @Composable
 fun SigInScreen(
     auth: FirebaseAuth,
-    cUser: FirebaseUser?,
     navController: NavHostController,
     context: Context){
 

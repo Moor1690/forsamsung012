@@ -1,9 +1,14 @@
 package com.example.forsamsung012.screens
 
 import android.annotation.SuppressLint
+import android.app.Application
 import android.content.Context
 import android.content.Intent
+import android.media.tv.TsRequest
+import android.os.Build
+import android.os.Bundle
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -54,19 +59,23 @@ import kotlinx.coroutines.launch
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.rememberDismissState
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModelProvider
+import androidx.core.os.bundleOf
+import androidx.lifecycle.LiveData
+import androidx.navigation.NavDirections
+import androidx.navigation.compose.rememberNavController
 import com.example.forsamsung012.MainActivity
-import com.example.forsamsung012.model.M
 import com.example.forsamsung012.model.TaskDatabase
 import com.example.forsamsung012.model.TaskModel
+import com.example.forsamsung012.viewModel.ListScreenViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
@@ -77,19 +86,19 @@ import com.google.firebase.database.DatabaseReference
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun ListScreen(
-    databaseReference: DatabaseReference,
-    userData: State<List<TaskModel>>/*MutableState<List<TaskModel>>*/,
+    application: Application,
+    listScreenViewModel: ListScreenViewModel,
     auth: FirebaseAuth,
-    cUser: FirebaseUser,
-    navController: NavHostController,
-    context: Context) {
+    navController: NavHostController
+) {
 
 
-    val taskDAO = TaskDatabase.getDatabase(context = context).taskDAO()
-    val m = M(taskDAO)
+    val taskDAO = TaskDatabase.getDatabase(context = application).taskDAO()
 
-    var userData2 = m.getAllObjects().observeAsState(initial = listOf())
 
+    var userData2 = listScreenViewModel.getAllObjects().observeAsState(initial = listOf())
+    Log.d("getAllObjects", userData2.value.toString())
+    var listName: State<List<String>> = listScreenViewModel.getAllListName().observeAsState(initial = listOf())
 
     //доделать ЭТО!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     /*val listScreenViewModel = ListScreenViewModel(
@@ -104,7 +113,7 @@ fun ListScreen(
 
     Scaffold(
         floatingActionButton = {
-            Button(onClick = { navController.navigate("TaskScreen")},modifier = Modifier
+            Button(onClick = { navController.navigate("TaskScreen/${-1}")},modifier = Modifier
                 .clip(CircleShape)
                 .size(50.dp)) {
                 Icon(Icons.Filled.Add, contentDescription = "Добавить", modifier = Modifier.size(50.dp))
@@ -118,8 +127,10 @@ fun ListScreen(
         scaffoldState = scaffoldState,
         drawerBackgroundColor = backgroundColor,
         backgroundColor = backgroundColor,
+/*
         contentColor = Color.Red,
-        drawerContentColor = Color.Red,
+*/
+        drawerContentColor = Color.White,
         topBar = {
             MyAppBar(onNavigationIconClick = {
                 scope.launch {
@@ -135,7 +146,7 @@ fun ListScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
-                    androidx.compose.material3.Text(text = "${cUser.email}")
+                    androidx.compose.material3.Text(text = "${auth.currentUser!!.email}")
                     //Text(text = "$logged ${cUser.email}")
                     androidx.compose.material3.Icon(
                         imageVector = Icons.Default.ExitToApp,
@@ -143,8 +154,25 @@ fun ListScreen(
                         modifier = Modifier.clickable {
                             auth.signOut()
                             //cUser = auth.currentUser
-                            context.startActivity(Intent(context, MainActivity::class.java))
+                            application.startActivity(Intent(application, MainActivity::class.java))
                         })
+                }
+                LazyColumn{
+                    items(listName.value){ item ->
+                        Card(
+
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(60.dp)
+                                .padding(8.dp)
+                        ) {
+                            Text(
+                                text = item,
+                                fontSize = 25.sp,
+                                modifier = Modifier.padding(start = 18.dp, top = 6.dp)
+                            )
+                        }
+                    }
                 }
                 Text(text = "text1")
                 Text(text = "text2")
@@ -166,6 +194,8 @@ fun ListScreen(
                 val dismissState = rememberDismissState(//rememberDismissState(
                     confirmStateChange = {
                         if (it == DismissValue.DismissedToEnd){
+                            Log.d("deleteObject(item)", item.toString())
+                            listScreenViewModel.deleteObject(item)
                             //listScreenViewModel.removeUserData(databaseReference,userData)
                             //item.key!!.toInt()
                             //userData.value[item.key!!.toInt()]
@@ -175,6 +205,8 @@ fun ListScreen(
                             isSwipeRemoved = true
                         }
                         else if (it == DismissValue.DismissedToStart){
+                            Log.d("deleteObject(item)", item.toString())
+                            listScreenViewModel.deleteObject(item)
                             //listScreenViewModel.removeUserData(databaseReference,userData)
                             //userData.value[item.key!!.toInt()]
                             //Log.d("MYdelete", userData.value.toString())
@@ -191,82 +223,86 @@ fun ListScreen(
 
                 SwipeToDismiss(
                     state = dismissState,
-                    directions = setOf(DismissDirection.StartToEnd,
+                    directions = setOf(
+                        DismissDirection.StartToEnd,
                         DismissDirection.EndToStart),
-                        dismissThresholds = {FractionalThreshold(0.5f)},
-                        background = {
-                            val direction = dismissState.dismissDirection ?: return@SwipeToDismiss
-                            val color by animateColorAsState(targetValue = when(dismissState.targetValue){
-                                DismissValue.Default -> Color.LightGray
-                                DismissValue.DismissedToEnd -> Color.Green
-                                DismissValue.DismissedToStart -> Color.Red
-                            })
+                    dismissThresholds = {FractionalThreshold(0.5f)},
+                    background = {
+                        val direction = dismissState.dismissDirection ?: return@SwipeToDismiss
+                        val color by animateColorAsState(targetValue = when(dismissState.targetValue){
+                            DismissValue.Default -> Color.LightGray
+                            DismissValue.DismissedToEnd -> Color.Green
+                            DismissValue.DismissedToStart -> Color.Red
+                        })
 
-                            val icon = when(direction){
-                                DismissDirection.EndToStart -> Icons.Default.Done
-                                DismissDirection.StartToEnd -> Icons.Default.Delete
-                            }
+                        val icon = when(direction){
+                            DismissDirection.EndToStart -> Icons.Default.Done
+                            DismissDirection.StartToEnd -> Icons.Default.Delete
+                        }
 
-                            val scale by animateFloatAsState(targetValue = if (dismissState.targetValue == DismissValue.Default) 0.8f else 1.2f)
+                        val scale by animateFloatAsState(targetValue = if (dismissState.targetValue == DismissValue.Default) 0.8f else 1.2f)
 
-                            val alignment = when(direction){
-                                DismissDirection.EndToStart -> Alignment.CenterEnd
-                                DismissDirection.StartToEnd -> Alignment.CenterStart
-                            }
+                        val alignment = when(direction){
+                            DismissDirection.EndToStart -> Alignment.CenterEnd
+                            DismissDirection.StartToEnd -> Alignment.CenterStart
+                        }
 
-                            Box(modifier = Modifier
-                                .fillMaxSize()
-                                .background(color)
-                                .padding(12.dp),
-                                contentAlignment = alignment
-                            ){
-                                Icon(icon, contentDescription = "icon", modifier = Modifier.scale(scale), tint = Color.Black)
-                            }
-                            Box(modifier = Modifier
-                                .fillMaxSize()
-                                //.background(color)
-                                .padding(12.dp),
-                                contentAlignment = alignment) {
-                                Icon(icon, contentDescription = "icon", modifier = Modifier.scale(scale))
-                            }
-                        },
-                        dismissContent = {
-                            androidx.compose.material.Card(
+                        Box(modifier = Modifier
+                            .fillMaxSize()
+                            .background(color)
+                            .padding(12.dp),
+                            contentAlignment = alignment
+                        ){
+                            Icon(icon, contentDescription = "icon", modifier = Modifier.scale(scale), tint = Color.Black)
+                        }
+                        Box(modifier = Modifier
+                            .fillMaxSize()
+                            //.background(color)
+                            .padding(12.dp),
+                            contentAlignment = alignment) {
+                            Icon(icon, contentDescription = "icon", modifier = Modifier.scale(scale))
+                        }
+                    },
+                    dismissContent = {
+                        androidx.compose.material.Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(110.dp)
+                                .padding(8.dp),
+                            backgroundColor = backgroundColor,
+                            elevation = animateDpAsState(targetValue = if (dismissState.dismissDirection != null) 4.dp else 0.dp).value
+                        ) {
+                            //Text(text = item.name, fontSize = 25.sp, fontWeight = FontWeight.Bold, color = Color.White, modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp))
+                            //Text(text =  item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name,  color = Color.White, modifier = Modifier.padding(horizontal = 8.dp, vertical = 0.dp), maxLines = 2)
+                            val myData = remember { mutableStateOf<TaskModel?>(null) }
+
+                            val navController2 = rememberNavController()
+                            //val bundle = bundleOf("taskModel" to item)
+                            Card(
+
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .heightIn(110.dp)
-                                    .padding(8.dp),
-                                backgroundColor = backgroundColor,
-                                elevation = animateDpAsState(targetValue = if (dismissState.dismissDirection != null) 4.dp else 0.dp).value
+                                    .padding(8.dp)
+                                    .clickable {
+
+                                        navController.navigate("TaskScreen/${item.key}")
+                                        //navController.navigate("TaskScreen")
+
+                                    }
                             ) {
-                                //Text(text = item.name, fontSize = 25.sp, fontWeight = FontWeight.Bold, color = Color.White, modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp))
-                                //Text(text =  item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name,  color = Color.White, modifier = Modifier.padding(horizontal = 8.dp, vertical = 0.dp), maxLines = 2)
-
-                                Card(
-
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .heightIn(110.dp)
-                                        .padding(8.dp)
-                                ) {
-                                    Text(text = item.name, fontSize = 25.sp, fontWeight = FontWeight.Bold, color = Color.White, modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp))
-                                    Text(text =  item.task,  color = Color.White, modifier = Modifier.padding(horizontal = 8.dp, vertical = 0.dp), maxLines = 2)
-                                }
+                                Text(text = item.name, fontSize = 25.sp, fontWeight = FontWeight.Bold, color = Color.White, modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp))
+                                Text(text =  item.task,  color = Color.White, modifier = Modifier.padding(horizontal = 8.dp, vertical = 0.dp), maxLines = 2)
                             }
-                            
-
                         }
+                    }
                 )
-
-
-
             }
         }
 
 
 
     }
-
 }
 
 private fun dpToPX(context: Context, dpValue: Float):Float{

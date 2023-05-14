@@ -22,23 +22,22 @@ import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.unit.dp
-import com.example.forsamsung012.model.TaskDAO
 import com.example.forsamsung012.model.TaskDatabase
 import com.example.forsamsung012.model.TaskModel
+import com.example.forsamsung012.viewModel.ListScreenViewModel
+import com.example.forsamsung012.viewModel.TaskViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.core.utilities.PushIdGenerator
-import com.google.firebase.database.snapshot.ChildKey
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
-import androidx.lifecycle.lifecycleScope
-import com.example.forsamsung012.model.M
 
 enum class MultiFloatingState{
     Expanded,
@@ -55,6 +54,8 @@ class MinFabItem(
 @SuppressLint("RestrictedApi")
 @Composable
 fun MultiFloatingButton(
+    listName: MutableState<String>,
+    taskViewModel: TaskViewModel,
     context: Context,
     database: FirebaseDatabase,
     auth: FirebaseAuth,
@@ -119,17 +120,17 @@ fun MultiFloatingButton(
             var te = myRef.push()
 
             var taskModel = TaskModel(
-                key = 10,
+                listName = "ЗАМЕТКА",
                 name = message1.value,
-                task = message2.value,
-                hash = "")
-
+                task = message2.value
+            )
+            taskViewModel.insertObject(taskModel, message1, message2, listName)
 
             //private val projectDAOModel = AppDatabaseModel.getDatabase(context = application).projectDAO()
 
             //private val repositoryModel = ProjectRepositoryModel(projectDAOModel = projectDAOModel)
             val taskDAO = TaskDatabase.getDatabase(context = context).taskDAO()
-            val m = M(taskDAO)
+
 
             //m.insertObject(taskModel)
             /*lifecycleScope.launch {

@@ -20,6 +20,7 @@ import com.example.forsamsung012.model.TaskModel
 import com.example.forsamsung012.navigate.Navigate
 import com.example.forsamsung012.ui.theme.Forsamsung012Theme
 import com.example.forsamsung012.viewModel.ListScreenViewModel
+import com.example.forsamsung012.viewModel.TaskViewModel
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -34,16 +35,13 @@ import com.google.firebase.storage.ktx.storage
 
 class MainActivity : ComponentActivity() {
 
-    val userData = mutableStateOf<List<TaskModel>>(listOf()) //this is list of user tasks
-
     var auth: FirebaseAuth = FirebaseAuth.getInstance()
     val database = Firebase.database("https://forsamsung012-default-rtdb.europe-west1.firebasedatabase.app/")
 
 
     private lateinit var listScreenViewModel: ListScreenViewModel
+    private lateinit var taskViewModel: TaskViewModel
 
-
-    public var cUser = auth.currentUser
     private val firebaseRemoteConfig = FirebaseRemoteConfig.getInstance()
     private val databaseReference = database.getReference("0/${auth.uid}/TASK/")
 
@@ -53,30 +51,32 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            //Forsamsung012Theme {
+            Forsamsung012Theme {
                 val provider = ViewModelProvider(this)
-                listScreenViewModel = provider[ListScreenViewModel::class.java]
-                var userData2 = listScreenViewModel.getAllObjects().observeAsState(initial = listOf())
+                //listScreenViewModel = provider[ListScreenViewModel::class.java]
+                taskViewModel = provider[TaskViewModel::class.java]
+
 
                 val navController: NavHostController = rememberAnimatedNavController()
+                listScreenViewModel = ListScreenViewModel(application, navController)
                 val isShowBottomBar = remember { mutableStateOf(false) }
                 Scaffold(
                     modifier = Modifier.fillMaxSize()//,
                 ) {
 
                     Navigate(
-                        userData = userData2,
+                        taskViewModel = taskViewModel,
+                        listScreenViewModel = listScreenViewModel,
+                        application = application,
                         database = database,
-                        cUser = cUser,
                         auth = auth,
                         navController = navController,
-                        context = this,
                         isShowBottomBar = isShowBottomBar,
                         firebaseRemoteConfig = firebaseRemoteConfig,
                         databaseReference = databaseReference
                     )
                 }
-            //}
+            }
         }
     }
 }

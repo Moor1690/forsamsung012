@@ -1,72 +1,49 @@
 package com.example.forsamsung012.viewModel
 
 import android.app.Application
-import android.content.Context
-import android.util.Log
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
-import com.example.forsamsung012.model.M
+import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavHostController
 import com.example.forsamsung012.model.TaskModel
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.example.forsamsung012.model.TaskDatabase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
-class ListScreenViewModel(application: Application) : AndroidViewModel(application) {
+class ListScreenViewModel(application: Application, navController: NavHostController) : AndroidViewModel(application) {
 
     val taskDAO = TaskDatabase.getDatabase(context = application).taskDAO()
-    val m = M(taskDAO)
-    private val readAllProjects: LiveData<List<TaskModel>> = m.getAllObjects()
-    fun getUserData2() :LiveData<List<TaskModel>>{
-        return readAllProjects
+    private val readAllProjects: LiveData<List<TaskModel>> = taskDAO.getAllObjects()
+
+    fun insertObject(taskModel: TaskModel){
+        viewModelScope.launch(Dispatchers.IO) {
+            taskDAO.insertObject(taskModel)
+        }
     }
 
     fun getAllObjects(): LiveData<List<TaskModel>>{
         return readAllProjects
     }
 
-
-    fun getUserData(
-        databaseReference: DatabaseReference,
-        userData: MutableState<List<TaskModel>>,
-    ) {
-        //Log.d("TAG", "getUserData")
-        databaseReference.addValueEventListener(
-            object : ValueEventListener {
-                override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    val userList = mutableListOf<TaskModel>()
-                    for (ds in dataSnapshot.children) {
-                        Log.d("TAG", "фывйцуыывds:\t"+ ds.toString())
-                        val userMap = ds.value as HashMap<*, *>
-                        val userModel = TaskModel(
-                            userMap["key"] as Long,
-                            userMap["name"] as String,
-                            userMap["task"] as String,
-                            userMap["hash"] as String
-                        )
-                        userList.add(userModel)
-                    }
-                    //Log.d("TAG", "successfully to read value."
-                    Log.d("TAG", "successfully to read value.")
-
-                    userData.value = userList
-                    Log.d("TAG", databaseReference.key.toString())
-                    Log.d("TAG", userData.value.toString())
-                    //Log.d("TAG", userData.value[1].toString())
-
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    Log.w("TAG", "Failed to read value.", error.toException())
-                }
-            }
-        )
+    fun deleteObject(taskModel: TaskModel){
+        viewModelScope.launch(Dispatchers.IO) {
+            taskDAO.deleteObject(taskModel)
+        }
     }
+    fun goToTaskSkreen(taskModel: TaskModel){
+
+    }
+
+    fun getAllListName(): LiveData<List<String>> {
+        return taskDAO.getAllListName()
+    }
+
 
     fun removeUserData(
         databaseReference2: DatabaseReference,
