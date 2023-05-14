@@ -74,12 +74,7 @@ fun TaskScreen(
 
 
     if (taskModelId != "-1"){
-        var taskModel: MutableLiveData<TaskModel> = taskViewModel.getObjectByKey(taskModelId!!.toLong())
-        //private val _data = MutableLiveData<TaskModel>()
-        message1.value = taskModel.value!!.name
-        message2.value = taskModel.value!!.task
-        //Log.d("NAKANECTO!!!!", taskModelId)
-
+        taskViewModel.getObjectByKey(taskModelId!!.toLong(),message1,message2)
     }
     val items = listOf(
         MinFabItem(

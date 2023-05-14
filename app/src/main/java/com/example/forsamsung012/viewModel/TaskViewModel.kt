@@ -13,6 +13,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.ZonedDateTime
@@ -59,19 +60,11 @@ class TaskViewModel(
     }
 
 
-    fun getObjectByKey(key: Long): MutableLiveData<TaskModel>{
-        val resultLiveData: MutableLiveData<TaskModel> = MutableLiveData()
+    fun getObjectByKey(key: Long, message1: MutableState<String>,  message2: MutableState<String>){
         viewModelScope.launch(Dispatchers.IO) {
-            resultLiveData.postValue(taskDAO.getObjectByKey(key))
+            delay(1000)
+            message1.value = taskDAO.getObjectByKey(key).task
         }
-        var i = 1000000
-        while (i > 0){
-            Log.d("tagWhile", i.toString())
-            i--
-            Log.d("resultLiveData.value", resultLiveData.value.toString())
-        }
-        Log.d("resultLiveData.value", resultLiveData.value.toString())
-        return resultLiveData
     }
 
 
