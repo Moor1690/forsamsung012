@@ -63,7 +63,9 @@ class TaskViewModel(
     fun getObjectByKey(key: Long, message1: MutableState<String>,  message2: MutableState<String>){
         viewModelScope.launch(Dispatchers.IO) {
             delay(1000)
-            message1.value = taskDAO.getObjectByKey(key).task
+            val taskModel = taskDAO.getObjectByKey(key)
+            message1.value =taskModel.name
+            message2.value=taskModel.task
         }
     }
 
