@@ -2,13 +2,8 @@ package com.example.forsamsung012.screens
 
 import android.annotation.SuppressLint
 import android.app.Application
-import android.content.Context
 import android.content.Intent
-import android.media.tv.TsRequest
-import android.os.Build
-import android.os.Bundle
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -59,26 +54,19 @@ import kotlinx.coroutines.launch
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.rememberDismissState
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
-import androidx.core.os.bundleOf
-import androidx.lifecycle.LiveData
-import androidx.navigation.NavDirections
 import androidx.navigation.compose.rememberNavController
 import com.example.forsamsung012.MainActivity
-import com.example.forsamsung012.model.TaskDatabase
 import com.example.forsamsung012.model.TaskModel
 import com.example.forsamsung012.viewModel.ListScreenViewModel
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.database.DatabaseReference
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "UnusedMaterialScaffoldPaddingParameter",
     "UnrememberedMutableState"
@@ -86,34 +74,25 @@ import com.google.firebase.database.DatabaseReference
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun ListScreen(
+/*    taskName: MutableState<String>,
+    taskDescription: MutableState<String>,*/
     application: Application,
     listScreenViewModel: ListScreenViewModel,
     auth: FirebaseAuth,
     navController: NavHostController
 ) {
 
-
-    val taskDAO = TaskDatabase.getDatabase(context = application).taskDAO()
-
-
-    var userData2 = listScreenViewModel.getAllObjects().observeAsState(initial = listOf())
-    Log.d("getAllObjects", userData2.value.toString())
+    var taskList = listScreenViewModel.getAllObjects().observeAsState(initial = listOf())
+    Log.d("getAllObjects", taskList.value.toString())
     var listName: State<List<String>> = listScreenViewModel.getAllListName().observeAsState(initial = listOf())
 
-    //доделать ЭТО!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    /*val listScreenViewModel = ListScreenViewModel(
-        application = ViewModelProvider()[ListScreenViewModel::class.java],
-        context = context)
-    val userData = mutableStateOf<List<TaskModel>>(listOf())
-
-    listScreenViewModel.getUserData(databaseReference, userData)*/
 
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
 
     Scaffold(
         floatingActionButton = {
-            Button(onClick = { navController.navigate("TaskScreen/${-1}")},modifier = Modifier
+            Button(onClick = { navController.navigate("TaskScreen")},modifier = Modifier
                 .clip(CircleShape)
                 .size(50.dp)) {
                 Icon(Icons.Filled.Add, contentDescription = "Добавить", modifier = Modifier.size(50.dp))
@@ -127,9 +106,6 @@ fun ListScreen(
         scaffoldState = scaffoldState,
         drawerBackgroundColor = backgroundColor,
         backgroundColor = backgroundColor,
-/*
-        contentColor = Color.Red,
-*/
         drawerContentColor = Color.White,
         topBar = {
             MyAppBar(onNavigationIconClick = {
@@ -189,7 +165,7 @@ fun ListScreen(
 
         LazyColumn {
 
-            items(userData2.value, key = { it.hashCode()}) { item ->
+            items(taskList.value, key = { it.hashCode()}) { item ->
                 //val currentItem by rememberUpdatedState(item)
                 val dismissState = rememberDismissState(//rememberDismissState(
                     confirmStateChange = {
@@ -303,8 +279,4 @@ fun ListScreen(
 
 
     }
-}
-
-private fun dpToPX(context: Context, dpValue: Float):Float{
-    return dpValue * context.resources.displayMetrics.density
 }

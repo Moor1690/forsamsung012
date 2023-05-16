@@ -2,7 +2,6 @@ package com.example.forsamsung012.bar
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.tween
@@ -22,8 +21,6 @@ import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -32,11 +29,9 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.unit.dp
 import com.example.forsamsung012.model.TaskDatabase
 import com.example.forsamsung012.model.TaskModel
-import com.example.forsamsung012.viewModel.ListScreenViewModel
-import com.example.forsamsung012.viewModel.TaskViewModel
+import com.example.forsamsung012.viewModel.taskScreenViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 
 enum class MultiFloatingState{
@@ -54,22 +49,20 @@ class MinFabItem(
 @SuppressLint("RestrictedApi")
 @Composable
 fun MultiFloatingButton(
+    key: String?,
+    isChange: Boolean,
     listName: MutableState<String>,
-    taskViewModel: TaskViewModel,
+    taskScreenViewModel: taskScreenViewModel,
     context: Context,
-    database: FirebaseDatabase,
-    auth: FirebaseAuth,
     multiFloatingState : MultiFloatingState,
     onMultiFabStateChange: (MultiFloatingState) -> Unit,
     items:List<MinFabItem>,
-    databaseReference: DatabaseReference,
-    firebaseRemoteConfig: FirebaseRemoteConfig,
-    message1: MutableState<String>,
-    message2: MutableState<String>
+    taskName: MutableState<String>,
+    taskDescription: MutableState<String>
 
 ){
     //val databaseReference = FirebaseDatabase.getInstance().getReference("USERS/${auth.uid}")
-    val myRef = database.getReference("0/${auth.uid}/TASK/")
+    //val myRef = database.getReference("0/${auth.uid}/TASK/")
     val transition = updateTransition(targetState = multiFloatingState, label = "transition")
 
     val rotate by transition.animateFloat(label = "rotate") {
@@ -107,7 +100,32 @@ fun MultiFloatingButton(
             }
         }
         FloatingActionButton(onClick = {
+            if(key != ""){
+                taskScreenViewModel.updateObject(TaskModel(
+                    key = key!!.toLong(),
+                    listName = "ЗАМЕТКА",
+                    name = taskName.value,
+                    task = taskDescription.value
+                ))
+            }else{
+                taskScreenViewModel.insertObject(TaskModel(
+                    listName = "ЗАМЕТКА",
+                    name = taskName.value,
+                    task = taskDescription.value
+                ),taskName, taskDescription, listName
+                )
+            }
 
+            /*var taskModel = TaskModel(
+                listName = "ЗАМЕТКА",
+                name = taskName.value,
+                task = taskDescription.value
+            )
+            if(isChange){
+                taskScreenViewModel.updateObject(taskModel)
+            }else{
+                taskScreenViewModel.insertObject(taskModel, taskName, taskDescription, listName)
+            }*/
             /*fun pushM(): DatabaseReference? {
                 val childNameStr = PushIdGenerator.generatePushChildName(repo.getServerTime())
                 val childKey = ChildKey.fromString(childNameStr)
@@ -116,64 +134,17 @@ fun MultiFloatingButton(
 
 
             //database.getReference("0/${auth.uid}/TASK/")
-            Log.d("myRef.path", myRef.path.toString())
-            var te = myRef.push()
 
-            var taskModel = TaskModel(
-                listName = "ЗАМЕТКА",
-                name = message1.value,
-                task = message2.value
-            )
-            taskViewModel.insertObject(taskModel, message1, message2, listName)
+
+
+
+
 
             //private val projectDAOModel = AppDatabaseModel.getDatabase(context = application).projectDAO()
 
             //private val repositoryModel = ProjectRepositoryModel(projectDAOModel = projectDAOModel)
             val taskDAO = TaskDatabase.getDatabase(context = context).taskDAO()
 
-
-            //m.insertObject(taskModel)
-            /*lifecycleScope.launch {
-                taskDAO.insertObject(taskModel)
-            }*/
-            //taskDAO.insertObject(myObject = taskModel)
-
-
-
-
-            te.setValue(taskModel/*TaskModel(
-                key = 0,
-                name = message1.value,
-                task = message2.value,
-                hash = ""
-            )*/)
-            //te.path
-            Log.d("te.ref", te.ref.toString())
-            Log.d("te.substring(3,21)", te.path.toString().substring(37,te.path.toString().length))
-            Log.d("te.path", te.path.toString())
-            Log.d("te.repo", te.repo.toString())
-            /*databaseReference.push().setValue(
-                TaskModel(
-                    key = databaseReference.push().key,
-                    name = message1.value,
-                    task = message2.value
-                )
-            )*/
-        //val myRef = database.getReference("USERS/${auth.uid}/TASK2/")
-            /*databaseReference.push().setValue(
-                TaskModel(
-                    key = databaseReference.push().key,
-                    name = message1.value,
-                    task = message1.value
-                )
-            )*/
-            /*onMultiFabStateChange(
-                    if (transition.currentState == MultiFloatingState.Expanded){
-                        MultiFloatingState.Collapsed
-                    } else{
-                        MultiFloatingState.Expanded
-                    }
-                )*/
         }
         ) {
             Icon(

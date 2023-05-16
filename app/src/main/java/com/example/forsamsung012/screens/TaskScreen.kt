@@ -2,7 +2,6 @@ package com.example.forsamsung012.screens
 
 import android.annotation.SuppressLint
 import android.app.Application
-import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -16,6 +15,7 @@ import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,20 +27,15 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
-import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.forsamsung012.R
 import com.example.forsamsung012.bar.MinFabItem
 import com.example.forsamsung012.bar.MultiFloatingButton
 import com.example.forsamsung012.bar.MultiFloatingState
 import com.example.forsamsung012.model.TaskDatabase
-import com.example.forsamsung012.model.TaskModel
-import com.example.forsamsung012.viewModel.TaskViewModel
+import com.example.forsamsung012.viewModel.taskScreenViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.inject.Deferred
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 
 
@@ -48,10 +43,11 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun TaskScreen(
+    taskName: MutableState<String>,
+    taskDescription: MutableState<String>,
     taskModelId: String?,
-    taskViewModel: TaskViewModel,
+    taskScreenViewModel: taskScreenViewModel,
     application: Application,
-    database: FirebaseDatabase,
     auth: FirebaseAuth,
     databaseReference: DatabaseReference,
     firebaseRemoteConfig: FirebaseRemoteConfig,
@@ -59,6 +55,7 @@ fun TaskScreen(
 ) {
 
 
+    var isChage = false
 
     val taskDAO = TaskDatabase.getDatabase(context = application).taskDAO()
 
@@ -67,14 +64,18 @@ fun TaskScreen(
         mutableStateOf(MultiFloatingState.Collapsed)
     }
     var listName = remember { mutableStateOf("ЗаМетка") }
-    var message1 = remember { mutableStateOf("") }
-    var message2 = remember { mutableStateOf("") }
+    var message1 = taskName
+    var message2 = taskDescription
+    var key = Long//remember { mutableStateOf(Long) }
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
 
 
-    if (taskModelId != "-1"){
-        taskViewModel.getObjectByKey(taskModelId!!.toLong(),message1,message2)
+
+
+    Log.d("taskModelId", taskModelId.toString())
+    if (taskModelId != ""){
+        taskScreenViewModel.getObjectByKey(taskModelId!!.toLong(),message1,message2)
     }
     val items = listOf(
         MinFabItem(
@@ -99,20 +100,21 @@ fun TaskScreen(
         backgroundColor = SnackbarDefaults.backgroundColor,
         floatingActionButton = {
             MultiFloatingButton(
+                key = taskModelId,
                 listName = listName,
-                taskViewModel = taskViewModel,
+                taskScreenViewModel = taskScreenViewModel,
                 context = application,
-                database = database,
-                auth = auth,
+                //auth = auth,
                 multiFloatingState = multiFloatingState,
                 onMultiFabStateChange = {
                     multiFloatingState = it
                 },
                 items = items,
-                firebaseRemoteConfig = firebaseRemoteConfig,
-                databaseReference = databaseReference,
-                message1 = message1,
-                message2 = message2
+                //firebaseRemoteConfig = firebaseRemoteConfig,
+                //databaseReference = databaseReference,
+                taskName = message1,
+                taskDescription = message2,
+                isChange = isChage
             )
 
         },

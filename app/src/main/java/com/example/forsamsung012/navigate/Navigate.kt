@@ -1,28 +1,22 @@
 package com.example.forsamsung012.navigate
 
+import android.annotation.SuppressLint
 import android.app.Application
-import android.content.Context
 import android.util.Log
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
-import androidx.navigation.Navigation
-import androidx.navigation.compose.NavHost
-import androidx.navigation.navArgument
-import com.example.forsamsung012.model.TaskModel
 import com.example.forsamsung012.screens.ListScreen
 import com.example.forsamsung012.screens.SigInScreen
 import com.example.forsamsung012.screens.TaskScreen
 import com.example.forsamsung012.ui.theme.Forsamsung012Theme
 import com.example.forsamsung012.viewModel.ListScreenViewModel
-import com.example.forsamsung012.viewModel.TaskViewModel
+import com.example.forsamsung012.viewModel.taskScreenViewModel
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
@@ -30,16 +24,18 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 
 
 
+@SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun Navigate(
-    taskViewModel: TaskViewModel,
+    taskName: MutableState<String>,
+    taskDescription: MutableState<String>,
+    taskScreenViewModel: taskScreenViewModel,
     listScreenViewModel:ListScreenViewModel,
     application: Application,
     database: FirebaseDatabase,
     auth : FirebaseAuth,
     navController: NavHostController,
-    isShowBottomBar: MutableState<Boolean>,
     databaseReference: DatabaseReference,
     firebaseRemoteConfig: FirebaseRemoteConfig
 ){
@@ -63,7 +59,7 @@ fun Navigate(
                             auth = auth,
                             navController = navController,
                             context = application)
-                        isShowBottomBar.value = false
+                        //isShowBottomBar.value = false
                 }
 /*                composable(route = "SignUpScreen") {
                     ForSamsung012Theme {
@@ -78,20 +74,32 @@ fun Navigate(
                             listScreenViewModel = listScreenViewModel,
                             auth = auth,
                             navController = navController)
-                        isShowBottomBar.value = false
                     }
                 composable(route = "TaskScreen/{taskModelId}"){ backStackEntry ->
                     TaskScreen(
+                        taskName = taskName,
+                        taskDescription = taskDescription,
                         taskModelId = backStackEntry.arguments?.getString("taskModelId"),
                         navController = navController,
-                        taskViewModel = taskViewModel,
+                        taskScreenViewModel = taskScreenViewModel,
                         application = application,
-                        database = database,
                         auth = auth,
                         firebaseRemoteConfig = firebaseRemoteConfig,
                         databaseReference = databaseReference
                     )
-                    isShowBottomBar.value = true
+                }
+                composable(route = "TaskScreen"){
+                    TaskScreen(
+                        taskName = mutableStateOf(""),
+                        taskDescription = mutableStateOf(""),
+                        taskModelId = "",
+                        navController = navController,
+                        taskScreenViewModel = taskScreenViewModel,
+                        application = application,
+                        auth = auth,
+                        firebaseRemoteConfig = firebaseRemoteConfig,
+                        databaseReference = databaseReference
+                    )
                 }
             }
         )
