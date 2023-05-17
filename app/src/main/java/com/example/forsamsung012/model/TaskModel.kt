@@ -11,6 +11,6 @@ data class TaskModel(
     val listName: String,
     val name: String,
     val task: String,
-    val toDelete: Boolean = false/*,
+    val toDelete: Boolean = false,/*,
     val dataLastchange: Data*/
 )

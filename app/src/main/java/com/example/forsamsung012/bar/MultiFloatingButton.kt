@@ -109,7 +109,7 @@ fun MultiFloatingButton(
                 ))
             }else{
                 taskScreenViewModel.insertObject(TaskModel(
-                    listName = "ЗАМЕТКА",
+                    listName = "1",
                     name = taskName.value,
                     task = taskDescription.value
                 ),taskName, taskDescription, listName

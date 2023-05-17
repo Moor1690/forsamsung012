@@ -13,7 +13,9 @@ interface TaskDAO {
     @Query("SELECT * FROM my_table")
     fun getAllObjects(): LiveData<List<TaskModel>>
     @Query("SELECT * FROM my_table WHERE listName = :listName")
-    fun getAllObjectsFromList(listName:String): LiveData<List<TaskModel>>
+    fun getAllObjectsByListName(listName:String): LiveData<List<TaskModel>>
+    /*@Query("SELECT * FROM my_table WHERE listName = :listName")
+    fun getAllObjectsFromList(listName:String): LiveData<List<TaskModel>>*/
     @Query("SELECT DISTINCT listName FROM my_table")
     fun getAllListName(): LiveData<List<String>>
 

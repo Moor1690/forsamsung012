@@ -62,6 +62,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.LiveData
 import androidx.navigation.compose.rememberNavController
 import com.example.forsamsung012.MainActivity
 import com.example.forsamsung012.model.TaskModel
@@ -82,9 +83,22 @@ fun ListScreen(
     navController: NavHostController
 ) {
 
-    var taskList = listScreenViewModel.getAllObjects().observeAsState(initial = listOf())
+    var listName = remember { mutableStateOf("ЗаМетка") }
+
+
+    //lateinit var t : LiveData<List<TaskModel>>
+    listScreenViewModel.getAllObjectsByListName(listName.value)
+    var taskList = listScreenViewModel.li.observeAsState(initial = listOf())
+
+
+
+    var listNameList: State<List<String>> = listScreenViewModel.getAllListName().observeAsState(initial = listOf())
+
+
+    //var taskList = listScreenViewModel.getAllObjects().observeAsState(initial = listOf())
+
+
     Log.d("getAllObjects", taskList.value.toString())
-    var listName: State<List<String>> = listScreenViewModel.getAllListName().observeAsState(initial = listOf())
 
 
     val scaffoldState = rememberScaffoldState()
@@ -108,7 +122,9 @@ fun ListScreen(
         backgroundColor = backgroundColor,
         drawerContentColor = Color.White,
         topBar = {
-            MyAppBar(onNavigationIconClick = {
+            MyAppBar(listName = listName,
+                onNavigationIconClick = {
+
                 scope.launch {
                     scaffoldState.drawerState.open()
                 }
@@ -130,11 +146,13 @@ fun ListScreen(
                         modifier = Modifier.clickable {
                             auth.signOut()
                             //cUser = auth.currentUser
-                            application.startActivity(Intent(application, MainActivity::class.java))
+                            val intent=Intent(application, MainActivity::class.java)
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            application.startActivity(intent)
                         })
                 }
                 LazyColumn{
-                    items(listName.value){ item ->
+                    items(listNameList.value){ item ->
                         Card(
 
                             modifier = Modifier
@@ -269,6 +287,7 @@ fun ListScreen(
                             ) {
                                 Text(text = item.name, fontSize = 25.sp, fontWeight = FontWeight.Bold, color = Color.White, modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp))
                                 Text(text =  item.task,  color = Color.White, modifier = Modifier.padding(horizontal = 8.dp, vertical = 0.dp), maxLines = 2)
+                                Text(text = item.listName)
                             }
                         }
                     }

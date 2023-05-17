@@ -1,8 +1,9 @@
 package com.example.forsamsung012.viewModel
 
 import android.app.Application
+import android.util.Log
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
@@ -20,10 +21,17 @@ class ListScreenViewModel(application: Application, navController: NavHostContro
 
     val taskDAO = TaskDatabase.getDatabase(context = application).taskDAO()
     private val readAllProjects: LiveData<List<TaskModel>> = taskDAO.getAllObjects()
-
+    var li:LiveData<List<TaskModel>> = taskDAO.getAllObjectsByListName("ЗаМетка")
     fun insertObject(taskModel: TaskModel){
         viewModelScope.launch(Dispatchers.IO) {
             taskDAO.insertObject(taskModel)
+        }
+    }
+
+    fun getAllObjectsByListName(listName:String){
+        viewModelScope.launch(Dispatchers.IO) {
+            li = /*liveData{*/taskDAO.getAllObjectsByListName(listName)
+            Log.d("getAllObjectsByListName", li.value.toString())
         }
     }
 
