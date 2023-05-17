@@ -1,9 +1,6 @@
 package com.example.forsamsung012.bar
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -22,7 +19,6 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController.current
 import androidx.compose.ui.text.input.ImeAction
@@ -38,7 +34,15 @@ fun MyAppBar(
     TopAppBar(
 
         title = {
-            F(listName)
+            OutlinedTextField(
+                value = listName.value,
+                onValueChange = { newText -> listName.value = newText },
+                modifier = Modifier.background(Color.DarkGray),
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Default
+                )
+            )
 
             //androidx.compose.material.Text(text = "...")
         },
@@ -53,30 +57,4 @@ fun MyAppBar(
             }
         }
     )
-}
-
-@OptIn(ExperimentalComposeUiApi::class)
-@Composable
-fun F(listName: MutableState<String>){
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .pointerInput(Unit) {
-                detectTapGestures {
-                    val keyboardController = LocalSoftwareKeyboardController.current
-                    keyboardController?.hideSoftwareKeyboard()
-                }
-            }
-    ) {
-        OutlinedTextField(
-            value = listName.value,
-            onValueChange = { newText -> listName.value = newText },
-            modifier = Modifier.background(Color.DarkGray),
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Email,
-                imeAction = ImeAction.Default
-            )
-        )
-    }
 }
