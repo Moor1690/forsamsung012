@@ -103,7 +103,7 @@ fun MultiFloatingButton(
             if(key != ""){
                 taskScreenViewModel.updateObject(TaskModel(
                     key = key!!.toLong(),
-                    listName = "ЗАМЕТКА",
+                    listName = "ЗаМетка",
                     name = taskName.value,
                     task = taskDescription.value
                 ))

@@ -11,6 +11,7 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -34,15 +35,20 @@ fun MyAppBar(
     TopAppBar(
 
         title = {
-            OutlinedTextField(
+            Text(
+                text = listName.value/*,
+                modifier = Modifier.background(Color.DarkGray)*/
+            )
+            /*OutlinedTextField(
                 value = listName.value,
                 onValueChange = { newText -> listName.value = newText },
                 modifier = Modifier.background(Color.DarkGray),
+                enabled = false,
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Default
                 )
-            )
+            )*/
 
             //androidx.compose.material.Text(text = "...")
         },

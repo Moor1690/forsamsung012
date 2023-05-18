@@ -155,10 +155,17 @@ fun ListScreen(
                     items(listNameList.value){ item ->
                         Card(
 
+
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .heightIn(60.dp)
                                 .padding(8.dp)
+                                .clickable {
+                                    listName.value = item
+                                    //navController.navigate("TaskScreen/${item.key}")
+                                    //navController.navigate("TaskScreen")
+
+                                }
                         ) {
                             Text(
                                 text = item,
