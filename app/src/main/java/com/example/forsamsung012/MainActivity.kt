@@ -16,7 +16,7 @@ import androidx.navigation.NavHostController
 import com.example.forsamsung012.navigate.Navigate
 import com.example.forsamsung012.ui.theme.Forsamsung012Theme
 import com.example.forsamsung012.viewModel.ListScreenViewModel
-import com.example.forsamsung012.viewModel.taskScreenViewModel
+import com.example.forsamsung012.viewModel.TaskScreenViewModel
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ktx.database
@@ -30,7 +30,7 @@ class MainActivity : ComponentActivity() {
 
 
     private lateinit var listScreenViewModel: ListScreenViewModel
-    private lateinit var taskScreenViewModel: taskScreenViewModel
+    private lateinit var taskScreenViewModel: TaskScreenViewModel
 
 
     private val firebaseRemoteConfig = FirebaseRemoteConfig.getInstance()
@@ -52,7 +52,7 @@ class MainActivity : ComponentActivity() {
 
                 val navController: NavHostController = rememberAnimatedNavController()
                 listScreenViewModel = ListScreenViewModel(application, navController)
-                taskScreenViewModel = taskScreenViewModel(application = application, key = 6)
+                taskScreenViewModel = TaskScreenViewModel(application = application, key = 0, auth = auth)
                 Scaffold(
                     modifier = Modifier.fillMaxSize()//,
                 ) {

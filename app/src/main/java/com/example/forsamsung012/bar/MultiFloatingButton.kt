@@ -2,6 +2,7 @@ package com.example.forsamsung012.bar
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.tween
@@ -29,10 +30,7 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.unit.dp
 import com.example.forsamsung012.model.TaskDatabase
 import com.example.forsamsung012.model.TaskModel
-import com.example.forsamsung012.viewModel.taskScreenViewModel
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.remoteconfig.FirebaseRemoteConfig
+import com.example.forsamsung012.viewModel.TaskScreenViewModel
 
 enum class MultiFloatingState{
     Expanded,
@@ -52,7 +50,7 @@ fun MultiFloatingButton(
     key: String?,
     isChange: Boolean,
     listName: MutableState<String>,
-    taskScreenViewModel: taskScreenViewModel,
+    taskScreenViewModel: TaskScreenViewModel,
     context: Context,
     multiFloatingState : MultiFloatingState,
     onMultiFabStateChange: (MultiFloatingState) -> Unit,
@@ -64,7 +62,7 @@ fun MultiFloatingButton(
     //val databaseReference = FirebaseDatabase.getInstance().getReference("USERS/${auth.uid}")
     //val myRef = database.getReference("0/${auth.uid}/TASK/")
     val transition = updateTransition(targetState = multiFloatingState, label = "transition")
-
+    val taskDAO = TaskDatabase.getDatabase(context = context).taskDAO()
     val rotate by transition.animateFloat(label = "rotate") {
         if (it == MultiFloatingState.Expanded) 315f else 0f
     }
@@ -100,15 +98,21 @@ fun MultiFloatingButton(
             }
         }
         FloatingActionButton(onClick = {
+            Log.d("onClick","onClick")
             if(key != ""){
+                //Log.d("key != \"\"", taskDAO.getAllListName(listName.value).taskListNameId.toString())
                 taskScreenViewModel.updateObject(TaskModel(
+                    taskListNameKey = 1,//taskDAO.getAllListName(listName.value).taskListNameId,
                     key = key!!.toLong(),
                     listName = "ЗаМетка",
                     name = taskName.value,
                     task = taskDescription.value
                 ))
             }else{
+                //Log.d("key = \"\"", taskDAO.getAllListName(listName.value).taskListNameId.toString())
+
                 taskScreenViewModel.insertObject(TaskModel(
+                    taskListNameKey = 1,//taskDAO.getAllListName(listName.value).taskListNameId,
                     listName = "1",
                     name = taskName.value,
                     task = taskDescription.value
@@ -143,7 +147,7 @@ fun MultiFloatingButton(
             //private val projectDAOModel = AppDatabaseModel.getDatabase(context = application).projectDAO()
 
             //private val repositoryModel = ProjectRepositoryModel(projectDAOModel = projectDAOModel)
-            val taskDAO = TaskDatabase.getDatabase(context = context).taskDAO()
+            //val taskDAO = TaskDatabase.getDatabase(context = context).taskDAO()
 
         }
         ) {

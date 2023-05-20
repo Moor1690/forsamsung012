@@ -14,18 +14,26 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.example.forsamsung012.model.TaskDatabase
+import com.example.forsamsung012.model.TaskListName
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class ListScreenViewModel(application: Application, navController: NavHostController) : AndroidViewModel(application) {
 
     val taskDAO = TaskDatabase.getDatabase(context = application).taskDAO()
-    private val readAllProjects: LiveData<List<TaskModel>> = taskDAO.getAllObjects()
-    var li:LiveData<List<TaskModel>> = taskDAO.getAllObjectsByListName("ЗаМетка")
+    //private val readAllProjects: LiveData<List<TaskModel>> = taskDAO.getAllObjects()
+    var li:LiveData<List<TaskModel>> = foo()
     fun insertObject(taskModel: TaskModel){
         viewModelScope.launch(Dispatchers.IO) {
             taskDAO.insertObject(taskModel)
         }
+    }
+
+    fun foo():LiveData<List<TaskModel>> {
+        Log.d("taskDAO.getAllObjectsByListName","taskDAO.getAllObjectsByListName")
+        var liw:LiveData<List<TaskModel>> = taskDAO.getAllObjectsByListName("ЗаМетка")
+        Log.d("ret123456", liw.value.toString())
+        return liw
     }
 
     fun getAllObjectsByListName(listName:String){
@@ -35,9 +43,9 @@ class ListScreenViewModel(application: Application, navController: NavHostContro
         }
     }
 
-    fun getAllObjects(): LiveData<List<TaskModel>>{
+    /*fun getAllObjects(): LiveData<List<TaskModel>>{
         return readAllProjects
-    }
+    }*/
 
     fun deleteObject(taskModel: TaskModel){
         viewModelScope.launch(Dispatchers.IO) {
@@ -52,6 +60,11 @@ class ListScreenViewModel(application: Application, navController: NavHostContro
         return taskDAO.getAllListName()
     }
 
+    fun insertListName(name:String){
+        viewModelScope.launch(Dispatchers.IO) {
+            taskDAO.insertListName(TaskListName(name = name))
+        }
+    }
 
     fun removeUserData(
         databaseReference2: DatabaseReference,

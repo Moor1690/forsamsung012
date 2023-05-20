@@ -13,7 +13,7 @@ import com.example.forsamsung012.screens.SigInScreen
 import com.example.forsamsung012.screens.TaskScreen
 import com.example.forsamsung012.ui.theme.Forsamsung012Theme
 import com.example.forsamsung012.viewModel.ListScreenViewModel
-import com.example.forsamsung012.viewModel.taskScreenViewModel
+import com.example.forsamsung012.viewModel.TaskScreenViewModel
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.firebase.auth.FirebaseAuth
@@ -30,7 +30,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 fun Navigate(
     taskName: MutableState<String>,
     taskDescription: MutableState<String>,
-    taskScreenViewModel: taskScreenViewModel,
+    taskScreenViewModel: TaskScreenViewModel,
     listScreenViewModel:ListScreenViewModel,
     application: Application,
     database: FirebaseDatabase,

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarDefaults
@@ -21,9 +22,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
@@ -33,20 +36,21 @@ import com.example.forsamsung012.bar.MinFabItem
 import com.example.forsamsung012.bar.MultiFloatingButton
 import com.example.forsamsung012.bar.MultiFloatingState
 import com.example.forsamsung012.model.TaskDatabase
-import com.example.forsamsung012.viewModel.taskScreenViewModel
+import com.example.forsamsung012.viewModel.TaskScreenViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 
 
 
+@OptIn(ExperimentalComposeUiApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun TaskScreen(
     taskName: MutableState<String>,
     taskDescription: MutableState<String>,
     taskModelId: String?,
-    taskScreenViewModel: taskScreenViewModel,
+    taskScreenViewModel: TaskScreenViewModel,
     application: Application,
     auth: FirebaseAuth,
     databaseReference: DatabaseReference,
@@ -145,14 +149,23 @@ fun TaskScreen(
                     color = Color.White,
                     modifier = Modifier.fillMaxWidth()) })
 
-
-            TextField(value = message2.value,
+            val focusManager = LocalFocusManager.current
+            //val keyboardController = LocalSoftwareKeyboardController.current
+            TextField(
+                value = message2.value,
                 onValueChange = { message2.value = it },
                 modifier = Modifier.fillMaxSize(),
                 textStyle = TextStyle(color = Color.White),
                 label = { Text(text = "Задача",
                     color = Color.White,
-                    modifier = Modifier.fillMaxWidth()) })
+                    modifier = Modifier.fillMaxWidth()) },
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(
+                    onDone = {focusManager.clearFocus()/*keyboardController?.hide()*/})
+                /*,onImeActionPerformed = {
+                    Log.d("sad","sda")
+                }*/
+            )
         }
     }
 
