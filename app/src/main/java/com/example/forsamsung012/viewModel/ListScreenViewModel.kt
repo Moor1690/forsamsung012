@@ -3,7 +3,6 @@ package com.example.forsamsung012.viewModel
 import android.app.Application
 import android.util.Log
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
@@ -25,10 +24,15 @@ class ListScreenViewModel(application: Application, navController: NavHostContro
     var li:LiveData<List<TaskModel>> = foo()
     fun insertObject(taskModel: TaskModel){
         viewModelScope.launch(Dispatchers.IO) {
-            taskDAO.insertObject(taskModel)
+            taskDAO.insertTaskModel(taskModel)
         }
     }
 
+    fun getFirstListNane(){
+        viewModelScope.launch(Dispatchers.IO) {
+            taskDAO.getTaskListNameByName()
+        }
+    }
     fun foo():LiveData<List<TaskModel>> {
         Log.d("taskDAO.getAllObjectsByListName","taskDAO.getAllObjectsByListName")
         var liw:LiveData<List<TaskModel>> = taskDAO.getAllObjectsByListName("ЗаМетка")
@@ -49,7 +53,7 @@ class ListScreenViewModel(application: Application, navController: NavHostContro
 
     fun deleteObject(taskModel: TaskModel){
         viewModelScope.launch(Dispatchers.IO) {
-            taskDAO.deleteObject(taskModel)
+            taskDAO.deleteTaskModel(taskModel)
         }
     }
     fun goToTaskSkreen(taskModel: TaskModel){
@@ -57,7 +61,7 @@ class ListScreenViewModel(application: Application, navController: NavHostContro
     }
 
     fun getAllListName(): LiveData<List<String>> {
-        return taskDAO.getAllListName()
+        return taskDAO.getTaskListNameByName()
     }
 
     fun insertListName(name:String){

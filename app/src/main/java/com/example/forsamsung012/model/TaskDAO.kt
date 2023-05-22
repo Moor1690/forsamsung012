@@ -11,30 +11,28 @@ import androidx.room.Update
 @Dao
 interface TaskDAO {
     @Query("SELECT * FROM taskModel")
-    fun getAllObjects(): LiveData<List<TaskModel>>
+    fun getAllTaskModel(): LiveData<List<TaskModel>>
     @Query("SELECT taskModel.* FROM taskModel JOIN taskListName ON taskModel.taskListNameKey = taskListName.taskListNameId Where taskListName.name = :listName")//WHERE listName = :listName")
     fun getAllObjectsByListName(listName:String): LiveData<List<TaskModel>>
 
-    /*@Query("SELECT * FROM my_table WHERE listName = :listName")
-    fun getAllObjectsFromList(listName:String): LiveData<List<TaskModel>>*/
     @Query("SELECT DISTINCT name FROM taskListName")
-    fun getAllListName(): LiveData<List<String>>
+    fun getTaskListNameByName(): LiveData<List<String>>
 
     @Query("SELECT * FROM taskModel WHERE name = :name AND task = :task")
-    fun getObject(name: String, task: String): TaskModel
+    fun getTaskModel(name: String, task: String): TaskModel
 /*    @Query("SELECT * FROM my_table WHERE `key` = :key")
     fun getObjectByKey(key: Long): TaskModel*/
     @Query("SELECT * FROM taskModel WHERE key = :key")
-    fun getObjectByKey(key: Long): TaskModel
+    fun getTaskModelByKey(key: Long): TaskModel
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertObject(taskModel: TaskModel)
+    fun insertTaskModel(taskModel: TaskModel)
 
     @Update
-    fun updateObject(taskModel: TaskModel)
+    fun updateTaskModel(taskModel: TaskModel)
 
     @Delete
-    fun deleteObject(taskModel: TaskModel)
+    fun deleteTaskModel(taskModel: TaskModel)
 
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -43,5 +41,5 @@ interface TaskDAO {
     fun getAllTaskListName(): LiveData<List<TaskListName>>
 
     @Query("SELECT * FROM taskListName WHERE name =:name")
-    fun getAllListName(name:String): TaskListName
+    fun getTaskListNameByName(name:String): TaskListName
 }

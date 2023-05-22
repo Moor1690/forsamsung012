@@ -1,6 +1,7 @@
 package com.example.forsamsung012.viewModel
 
 import android.app.Application
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -21,15 +22,23 @@ class TaskScreenViewModel(
     //val database = Firebase.database("https://forsamsung012-default-rtdb.europe-west1.firebasedatabase.app/")
     //private val databaseReference = Firebase.database("https://forsamsung012-default-rtdb.europe-west1.firebasedatabase.app/").getReference("0/${FirebaseAuth.getInstance().uid}/TASK/")
 
-    var myR = MyRepository(key,application,auth)
-    fun insertObject(taskModel: TaskModel, message1: MutableState<String>,  message2: MutableState<String>, listName: MutableState<String>){
+    var myR = MyRepository(application,auth)
+    fun insertObject(taskName: MutableState<String>, taskDescription: MutableState<String>, listName: MutableState<String>){
         viewModelScope.launch(Dispatchers.IO) {
-            myR.insertObject(taskModel,message1,message2,listName)
+            Log.d("listNameSOUT",listName.value)
+            var id = taskDAO.getTaskListNameByName(listName.value).taskListNameId
+            myR.insertObject(taskName,taskDescription,listName,id)
         }
     }
-    fun updateObject(taskModel: TaskModel){
+    fun updateObject(taskName: MutableState<String>, taskDescription: MutableState<String>, listName: MutableState<String>, key: Long){
         viewModelScope.launch(Dispatchers.IO) {
-            myR.updateObject(taskModel)
+            myR.updateObject(TaskModel(
+                taskListNameKey = taskDAO.getTaskListNameByName(listName.value).taskListNameId,
+                key = key,
+                listName = listName.value,
+                name = taskName.value,
+                task = taskDescription.value
+            ))
         }
     }
 
@@ -52,12 +61,4 @@ class TaskScreenViewModel(
     }
 
 
-
-
-    /*fun ad(){
-        viewModelScope.launch(Dispatchers.IO) {
-            m.insertObject(taskModel)
-        }
-    }*/
-    //m.insertObject(taskModel)
 }

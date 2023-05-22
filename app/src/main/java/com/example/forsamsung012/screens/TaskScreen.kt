@@ -7,14 +7,21 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.FloatingActionButton
+import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarDefaults
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.rememberScaffoldState
+import androidx.compose.material3.Button
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -24,18 +31,18 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.forsamsung012.R
-import com.example.forsamsung012.bar.MinFabItem
-import com.example.forsamsung012.bar.MultiFloatingButton
-import com.example.forsamsung012.bar.MultiFloatingState
 import com.example.forsamsung012.model.TaskDatabase
+import com.example.forsamsung012.model.TaskModel
 import com.example.forsamsung012.viewModel.TaskScreenViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
@@ -47,6 +54,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun TaskScreen(
+    listName: MutableState<String>,
     taskName: MutableState<String>,
     taskDescription: MutableState<String>,
     taskModelId: String?,
@@ -64,10 +72,9 @@ fun TaskScreen(
     val taskDAO = TaskDatabase.getDatabase(context = application).taskDAO()
 
 
-    var multiFloatingState by remember {
-        mutableStateOf(MultiFloatingState.Collapsed)
-    }
-    var listName = remember { mutableStateOf("ЗаМетка") }
+
+    //var listName = remember { mutableStateOf("") }
+    Log.d("listNameOnTaskScreen", listName.value)
     var message1 = taskName
     var message2 = taskDescription
     var key = Long//remember { mutableStateOf(Long) }
@@ -81,28 +88,42 @@ fun TaskScreen(
     if (taskModelId != ""){
         taskScreenViewModel.getObjectByKey(taskModelId!!.toLong(),message1,message2)
     }
-    val items = listOf(
-        MinFabItem(
-            icon = ImageBitmap.imageResource(id = R.drawable.delete),
-            label = "Menu",
-            identifier = "MenuFab"
-        ),
-        MinFabItem(
-            icon = ImageBitmap.imageResource(id = R.drawable.delete),
-            label = "Delete",
-            identifier = "DeleteFab"
-        )/*,
-        MinFabItem(
-            icon = Icons.Default.Menu,
-            label = "Menu",
-            identifier = "MenuFab"
-        )*/
-    )
+
 
     Scaffold(
         drawerBackgroundColor = SnackbarDefaults.backgroundColor,
         backgroundColor = SnackbarDefaults.backgroundColor,
         floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+
+                      if(taskModelId != ""){
+                        taskScreenViewModel.updateObject(
+                            taskName = taskName,
+                            taskDescription = taskDescription,
+                            listName = listName,
+                            key = taskModelId!!.toLong()
+                        )
+                    }else{
+                          taskScreenViewModel.insertObject(
+                              taskName,
+                              taskDescription,
+                              listName
+                        )
+                    }
+                }, modifier = Modifier
+                    .clip(CircleShape)
+                    .size(50.dp)
+            ) {
+                Icon(
+                    Icons.Filled.Add,
+                    contentDescription = "Добавить",
+                    modifier = Modifier.size(30.dp)
+                )
+            }
+
+        },
+        /*floatingActionButton = {
             MultiFloatingButton(
                 key = taskModelId,
                 listName = listName,
@@ -121,7 +142,7 @@ fun TaskScreen(
                 isChange = isChage
             )
 
-        },
+        },*/
         scaffoldState = scaffoldState,
         drawerGesturesEnabled = scaffoldState.drawerState.isOpen,
     ){

@@ -1,3 +1,4 @@
+/*
 package com.example.forsamsung012.bar
 
 import android.annotation.SuppressLint
@@ -38,7 +39,9 @@ enum class MultiFloatingState{
 }
 
 class MinFabItem(
-    val icon: ImageBitmap,/*ImageVector*/
+    val icon: ImageBitmap,*/
+/*ImageVector*//*
+
     val label:String,
     val identifier:String
 )
@@ -99,12 +102,13 @@ fun MultiFloatingButton(
         }
         FloatingActionButton(onClick = {
             Log.d("onClick","onClick")
+
             if(key != ""){
                 //Log.d("key != \"\"", taskDAO.getAllListName(listName.value).taskListNameId.toString())
                 taskScreenViewModel.updateObject(TaskModel(
                     taskListNameKey = 1,//taskDAO.getAllListName(listName.value).taskListNameId,
                     key = key!!.toLong(),
-                    listName = "ЗаМетка",
+                    listName = listName.value,
                     name = taskName.value,
                     task = taskDescription.value
                 ))
@@ -113,14 +117,15 @@ fun MultiFloatingButton(
 
                 taskScreenViewModel.insertObject(TaskModel(
                     taskListNameKey = 1,//taskDAO.getAllListName(listName.value).taskListNameId,
-                    listName = "1",
+                    listName = listName.value,
                     name = taskName.value,
                     task = taskDescription.value
                 ),taskName, taskDescription, listName
                 )
             }
 
-            /*var taskModel = TaskModel(
+            */
+/*var taskModel = TaskModel(
                 listName = "ЗАМЕТКА",
                 name = taskName.value,
                 task = taskDescription.value
@@ -129,12 +134,15 @@ fun MultiFloatingButton(
                 taskScreenViewModel.updateObject(taskModel)
             }else{
                 taskScreenViewModel.insertObject(taskModel, taskName, taskDescription, listName)
-            }*/
-            /*fun pushM(): DatabaseReference? {
+            }*//*
+
+            */
+/*fun pushM(): DatabaseReference? {
                 val childNameStr = PushIdGenerator.generatePushChildName(repo.getServerTime())
                 val childKey = ChildKey.fromString(childNameStr)
                 return DatabaseReference(repo, getPath().child(childKey))
-            }*/
+            }*//*
+
 
 
             //database.getReference("0/${auth.uid}/TASK/")
@@ -198,4 +206,4 @@ fun MinFad(
             )
         )
     }
-}
+}*/

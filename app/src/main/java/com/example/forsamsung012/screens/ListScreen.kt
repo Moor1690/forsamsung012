@@ -24,6 +24,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.DismissDirection
 import androidx.compose.material.DismissValue
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.FractionalThreshold
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -81,8 +82,7 @@ import com.google.firebase.auth.FirebaseAuth
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun ListScreen(
-    /*    taskName: MutableState<String>,
-        taskDescription: MutableState<String>,*/
+    listName: MutableState<String>,
     application: Application,
     listScreenViewModel: ListScreenViewModel,
     auth: FirebaseAuth,
@@ -90,11 +90,11 @@ fun ListScreen(
 ) {
     val showDialog = remember { mutableStateOf(false) }
     val newListName = remember { mutableStateOf("") }
+    if (listName.value == ""){
+        listScreenViewModel.getFirstListNane()
+    }
 
-    var listName = remember { mutableStateOf("ЗаМетка") }
 
-
-    //lateinit var t : LiveData<List<TaskModel>>
     listScreenViewModel.getAllObjectsByListName(listName.value)
     var taskList = listScreenViewModel.li.observeAsState(initial = listOf())
 
@@ -114,7 +114,7 @@ fun ListScreen(
 
     Scaffold(
         floatingActionButton = {
-            Button(
+            FloatingActionButton(
                 onClick = { navController.navigate("TaskScreen") }, modifier = Modifier
                     .clip(CircleShape)
                     .size(50.dp)
@@ -122,13 +122,10 @@ fun ListScreen(
                 Icon(
                     Icons.Filled.Add,
                     contentDescription = "Добавить",
-                    modifier = Modifier.size(50.dp)
+                    modifier = Modifier.size(30.dp)
                 )
             }
-            /*FloatingActionButton(onClick = { navController.navigate("TaskScreen") }) {
-                *//* FAB content *//*
-                Icon(Icons.Filled.Add, contentDescription = "Добавить")
-            }*/
+
         },
         modifier = Modifier.background(color = Color.Red),
         scaffoldState = scaffoldState,
@@ -138,7 +135,6 @@ fun ListScreen(
         topBar = {
             MyAppBar(listName = listName,
                 onNavigationIconClick = {
-
                     scope.launch {
                         scaffoldState.drawerState.open()
                     }
@@ -159,7 +155,6 @@ fun ListScreen(
                         contentDescription = "Log out",
                         modifier = Modifier.clickable {
                             auth.signOut()
-                            //cUser = auth.currentUser
                             val intent = Intent(application, MainActivity::class.java)
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                             application.startActivity(intent)
@@ -168,23 +163,18 @@ fun ListScreen(
                 LazyColumn {
                     items(listNameList.value) { item ->
                         Card(
-
-
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .heightIn(60.dp)
                                 .padding(8.dp)
                                 .clickable {
                                     listName.value = item
-                                    //navController.navigate("TaskScreen/${item.key}")
-                                    //navController.navigate("TaskScreen")
-
                                 }
                         ) {
                             Text(
                                 text = item,
-                                fontSize = 25.sp,
-                                modifier = Modifier.padding(start = 18.dp, top = 6.dp)
+                                fontSize = 20.sp,
+                                modifier = Modifier.padding(start = 18.dp, top = 8.dp)
                             )
                         }
                     }
@@ -196,25 +186,15 @@ fun ListScreen(
                         .padding(8.dp)
                         .clickable {
                             showDialog.value = true
-                            //navController.navigate("TaskScreen/${item.key}")
-                            //navController.navigate("TaskScreen")
-
                         },
-                    //Alignment.Center
                 ) {
-                    //Row(verticalAlignment = Alignment.CenterVertically){
                     Text(
                         text = "Создать новый лист задач",
                         fontSize = 20.sp,
-                        modifier = Modifier.padding(start = 18.dp/*, top = 6.dp*/),
+                        modifier = Modifier.padding(start = 18.dp, top = 8.dp),
                         textAlign = TextAlign.Center
                     )
-                    //}
-
                 }
-                Text(text = "text1")
-                Text(text = "text2")
-                Text(text = "text3")
             }
 
         }
@@ -265,14 +245,8 @@ fun ListScreen(
                         if (it == DismissValue.DismissedToEnd) {
                             Log.d("deleteObject(item)", item.toString())
                             listScreenViewModel.deleteObject(item)
-                            //listScreenViewModel.removeUserData(databaseReference,userData)
-                            //item.key!!.toInt()
-                            //userData.value[item.key!!.toInt()]
-                            //itemsList.remove(item)
-                            //Log.d("MYdelete", userData.value.toString())
-                            //Log.d("MYdelete", userData.value[item.key!!.toInt()].toString())
                             isSwipeRemoved = true
-                        } else if (it == DismissValue.DismissedToStart) {
+                        } /*else if (it == DismissValue.DismissedToStart) {
                             Log.d("deleteObject(item)", item.toString())
                             listScreenViewModel.deleteObject(item)
                             //listScreenViewModel.removeUserData(databaseReference,userData)
@@ -280,7 +254,7 @@ fun ListScreen(
                             //Log.d("MYdelete", userData.value.toString())
                             //itemsList.remove(item)
                             isSwipeRemoved = true
-                        }
+                        }*/
                         true
                     }
                 )
@@ -292,8 +266,8 @@ fun ListScreen(
                 SwipeToDismiss(
                     state = dismissState,
                     directions = setOf(
-                        DismissDirection.StartToEnd,
-                        DismissDirection.EndToStart
+                        DismissDirection.StartToEnd/*,
+                        DismissDirection.EndToStart*/
                     ),
                     dismissThresholds = { FractionalThreshold(0.5f) },
                     background = {
@@ -301,22 +275,22 @@ fun ListScreen(
                         val color by animateColorAsState(
                             targetValue = when (dismissState.targetValue) {
                                 DismissValue.Default -> Color.LightGray
-                                DismissValue.DismissedToEnd -> Color.Green
-                                DismissValue.DismissedToStart -> Color.Red
+                                DismissValue.DismissedToEnd -> Color.Red
+                                DismissValue.DismissedToStart -> Color.DarkGray
                             }
                         )
 
-                        val icon = when (direction) {
-                            DismissDirection.EndToStart -> Icons.Default.Done
+                        val icon = Icons.Default.Delete/*when (direction) {
+                            //DismissDirection.EndToStart -> Icons.Default.Done
                             DismissDirection.StartToEnd -> Icons.Default.Delete
-                        }
+                        }*/
 
                         val scale by animateFloatAsState(targetValue = if (dismissState.targetValue == DismissValue.Default) 0.8f else 1.2f)
 
-                        val alignment = when (direction) {
-                            DismissDirection.EndToStart -> Alignment.CenterEnd
+                        val alignment = Alignment.CenterStart/*when (direction) {
+                            //DismissDirection.EndToStart -> Alignment.CenterEnd
                             DismissDirection.StartToEnd -> Alignment.CenterStart
-                        }
+                        }*/
 
                         Box(
                             modifier = Modifier
@@ -335,7 +309,6 @@ fun ListScreen(
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
-                                //.background(color)
                                 .padding(12.dp),
                             contentAlignment = alignment
                         ) {
@@ -355,23 +328,15 @@ fun ListScreen(
                             backgroundColor = backgroundColor,
                             elevation = animateDpAsState(targetValue = if (dismissState.dismissDirection != null) 4.dp else 0.dp).value
                         ) {
-                            //Text(text = item.name, fontSize = 25.sp, fontWeight = FontWeight.Bold, color = Color.White, modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp))
-                            //Text(text =  item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name + item.name,  color = Color.White, modifier = Modifier.padding(horizontal = 8.dp, vertical = 0.dp), maxLines = 2)
-                            val myData = remember { mutableStateOf<TaskModel?>(null) }
-
-                            val navController2 = rememberNavController()
-                            //val bundle = bundleOf("taskModel" to item)
                             Card(
+
 
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .heightIn(110.dp)
                                     .padding(8.dp)
                                     .clickable {
-
                                         navController.navigate("TaskScreen/${item.key}")
-                                        //navController.navigate("TaskScreen")
-
                                     }
                             ) {
                                 Text(
@@ -387,7 +352,6 @@ fun ListScreen(
                                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 0.dp),
                                     maxLines = 2
                                 )
-                                Text(text = item.listName)
                             }
                         }
                     }

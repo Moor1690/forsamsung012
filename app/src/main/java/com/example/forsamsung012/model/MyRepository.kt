@@ -4,18 +4,12 @@ import android.app.Application
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.liveData
-import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
 class MyRepository(
-    key:Long,
     application: Application,
     auth : FirebaseAuth
 ) {
@@ -25,22 +19,22 @@ class MyRepository(
     private val databaseReference = database.getReference("0/${auth.uid}/TASK/")
 
     suspend fun insertObject(
-        taskModel: TaskModel,
-        message1: MutableState<String>,
-        message2: MutableState<String>,
-        listName: MutableState<String>
+        taskName: MutableState<String>,
+        taskDescription: MutableState<String>,
+        listName: MutableState<String>,
+        id:Long
     ) {
 
-        Log.d("getOneObjekt", taskModel.toString())
+        Log.d("listNameSOUT",listName.value)
         //taskDAO.insertListName(TaskListName(name = listName.value))
 
         var taskModel = TaskModel(
-            taskListNameKey = taskDAO.getAllListName(listName.value).taskListNameId,
+            taskListNameKey = id,
             listName = listName.value,
-            name = message1.value,
-            task = message2.value
+            name = taskName.value,
+            task = taskDescription.value
         )
-        taskDAO.insertObject(taskModel)
+        taskDAO.insertTaskModel(taskModel)
 
         Log.d("qwertyyuiop", taskDAO.getAllTaskListName().value.toString())
         //Log.d("qwertyyuiop", taskDAO.getAllObjects().value.toString())
@@ -52,9 +46,9 @@ class MyRepository(
         val databaseReference =
             Firebase.database("https://forsamsung012-default-rtdb.europe-west1.firebasedatabase.app/")
                 .getReference(
-                    "0/${FirebaseAuth.getInstance().uid}/TASK/" + taskDAO.getObject(
-                        message1.value,
-                        message2.value
+                    "0/${FirebaseAuth.getInstance().uid}/TASK/" + taskDAO.getTaskModel(
+                        taskName.value,
+                        taskDescription.value
                     ).key
                 )
         databaseReference.setValue(taskModel)
@@ -65,7 +59,7 @@ class MyRepository(
 
 
     suspend fun updateObject(taskModel: TaskModel) {
-        taskDAO.updateObject(taskModel)
+        taskDAO.updateTaskModel(taskModel)
 
         val databaseReference =
             Firebase.database("https://forsamsung012-default-rtdb.europe-west1.firebasedatabase.app/")
@@ -83,10 +77,10 @@ class MyRepository(
         //Log.d("databaseReference.get()",databaseReference.get)
 
 
-        return taskDAO.getObjectByKey(key)
+        return taskDAO.getTaskModelByKey(key)
     }
 
     suspend fun getAllListName(): LiveData<List<String>>{
-        return taskDAO.getAllListName()
+        return taskDAO.getTaskListNameByName()
     }
 }

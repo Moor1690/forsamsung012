@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.navigation.NavHostController
+import com.example.forsamsung012.model.MyRepository
 import com.example.forsamsung012.screens.ListScreen
 import com.example.forsamsung012.screens.SigInScreen
 import com.example.forsamsung012.screens.TaskScreen
@@ -28,6 +29,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun Navigate(
+    listName: MutableState<String>,
     taskName: MutableState<String>,
     taskDescription: MutableState<String>,
     taskScreenViewModel: TaskScreenViewModel,
@@ -46,6 +48,8 @@ fun Navigate(
         } else {
             start = "ListScreen"
         }
+        var myR = MyRepository(application,auth)
+
 
 
 
@@ -69,14 +73,17 @@ fun Navigate(
                 }*/
                 composable(route = "ListScreen") {
                     Log.d("TAG", "route = \"ListScreen\"")
-                        ListScreen(
-                            application = application,
-                            listScreenViewModel = listScreenViewModel,
-                            auth = auth,
-                            navController = navController)
+                    ListScreen(
+                        listName = listName,
+                        application = application,
+                        listScreenViewModel = listScreenViewModel,
+                        auth = auth,
+                        navController = navController)
                     }
                 composable(route = "TaskScreen/{taskModelId}"){ backStackEntry ->
+                    Log.d("composable(rout", backStackEntry.arguments?.getString("taskModelId").toString())
                     TaskScreen(
+                        listName = listName,
                         taskName = taskName,
                         taskDescription = taskDescription,
                         taskModelId = backStackEntry.arguments?.getString("taskModelId"),
@@ -90,6 +97,7 @@ fun Navigate(
                 }
                 composable(route = "TaskScreen"){
                     TaskScreen(
+                        listName = listName,
                         taskName = mutableStateOf(""),
                         taskDescription = mutableStateOf(""),
                         taskModelId = "",

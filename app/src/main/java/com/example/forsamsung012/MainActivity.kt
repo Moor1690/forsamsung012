@@ -46,7 +46,7 @@ class MainActivity : ComponentActivity() {
                 val provider = ViewModelProvider(this)
                 //listScreenViewModel = provider[ListScreenViewModel::class.java]
                 ///taskScreenViewModel = provider[TaskViewModel::class.java]
-                var listName = remember { mutableStateOf("ЗаМетка") }
+                var listName = remember { mutableStateOf("") }
                 var taskName = remember { mutableStateOf("") }
                 var taskDescription = remember { mutableStateOf("") }
 
@@ -58,7 +58,8 @@ class MainActivity : ComponentActivity() {
                 ) {
 
                     Navigate(
-                        taskName= taskName,
+                        listName = listName,
+                        taskName = taskName,
                         taskDescription = taskDescription,
                         taskScreenViewModel = taskScreenViewModel,
                         listScreenViewModel = listScreenViewModel,
