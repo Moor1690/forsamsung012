@@ -4,27 +4,32 @@ import android.content.Context
 import android.widget.Toast
 import androidx.navigation.NavHostController
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 
 class SignInViewModel {
     //private var auth: FirebaseAuth = FirebaseAuth.getInstance()
     //var cUser = auth.currentUser
 
-    fun signIn(auth: FirebaseAuth ,email: String, password: String, cont: Context?, navController: NavHostController){
+    fun signIn(
+        auth: FirebaseAuth,
+        email: String,
+        password: String,
+        cont: Context?,
+        navController: NavHostController
+    ) {
         //navController.navigate("ListScreen")
 
-        if(auth.currentUser == null){
+        if (auth.currentUser == null) {
             auth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener() { task ->
+                .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
-                        Toast.makeText(cont, "Authentication Successful.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(cont, "Authentication Successful.", Toast.LENGTH_SHORT)
+                            .show()
                         navController.navigate("ListScreen")
                     } else {
                         Toast.makeText(cont, "Authentication failed.", Toast.LENGTH_SHORT).show()
                     }
                 }
-        }
-        else{
+        } else {
             navController.navigate("ListScreen")
         }
     }

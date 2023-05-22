@@ -11,7 +11,7 @@ import java.time.LocalDateTime
 
 class MyRepository(
     application: Application,
-    auth : FirebaseAuth
+    auth: FirebaseAuth
 ) {
     val taskDAO = TaskDatabase.getDatabase(context = application).taskDAO()
     val database =
@@ -22,10 +22,10 @@ class MyRepository(
         taskName: MutableState<String>,
         taskDescription: MutableState<String>,
         listName: MutableState<String>,
-        id:Long
+        id: Long
     ) {
 
-        Log.d("listNameSOUT",listName.value)
+        Log.d("listNameSOUT", listName.value)
         //taskDAO.insertListName(TaskListName(name = listName.value))
 
         var taskModel = TaskModel(
@@ -69,18 +69,17 @@ class MyRepository(
 
     suspend fun getObjectByKey(
         key: Long
-    ) : TaskModel{
+    ): TaskModel {
 
         val databaseReference =
             Firebase.database("https://forsamsung012-default-rtdb.europe-west1.firebasedatabase.app/")
                 .getReference("0/${FirebaseAuth.getInstance().uid}/TASK/" + key)
-        //Log.d("databaseReference.get()",databaseReference.get)
 
 
         return taskDAO.getTaskModelByKey(key)
     }
 
-    suspend fun getAllListName(): LiveData<List<String>>{
-        return taskDAO.getTaskListNameByName()
+    suspend fun getAllListName(): LiveData<List<String>> {
+        return taskDAO.getAllNameTaskListName()
     }
 }

@@ -17,7 +17,7 @@ abstract class TaskDatabase : RoomDatabase() {
 
 
         fun getDatabase(context: Context): TaskDatabase {
-            Log.d("getDatabase","getDatabase")
+            Log.d("getDatabase", "getDatabase")
             val tempInstance = INSTANCE
             if (tempInstance != null) {
                 return tempInstance
@@ -31,8 +31,6 @@ abstract class TaskDatabase : RoomDatabase() {
                 return instance
             }
         }
-
-
 
 
         /*fun getDatabase(context: Context): TaskDatabase {

@@ -7,9 +7,9 @@ import com.google.firebase.auth.FirebaseAuth
 class SignUpViewModel {
     private var auth: FirebaseAuth = FirebaseAuth.getInstance()
 
-    fun sigUp(email: String, password: String, cont: Context?){
+    fun sigUp(email: String, password: String, cont: Context?) {
         auth.createUserWithEmailAndPassword(email.toString(), password.toString())
-            .addOnCompleteListener() { task ->
+            .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     Toast.makeText(cont, "Registration Successful.", Toast.LENGTH_SHORT).show()
                 } else {

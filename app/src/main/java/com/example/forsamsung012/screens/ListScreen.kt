@@ -1,13 +1,15 @@
 package com.example.forsamsung012.screens
 
+
 import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Intent
 import android.util.Log
+import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +22,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.DismissDirection
 import androidx.compose.material.DismissValue
@@ -27,7 +30,6 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.FractionalThreshold
 import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarDefaults.backgroundColor
 import androidx.compose.material.SwipeToDismiss
@@ -35,45 +37,44 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.rememberDismissState
 import androidx.compose.material.rememberScaffoldState
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
-import com.example.forsamsung012.bar.MyAppBar
-import kotlinx.coroutines.launch
-
-
-import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.filled.ExitToApp
-import androidx.compose.material.rememberDismissState
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.TextField
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.LiveData
-import androidx.navigation.compose.rememberNavController
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavHostController
 import com.example.forsamsung012.MainActivity
-import com.example.forsamsung012.model.TaskModel
+import com.example.forsamsung012.bar.MyAppBar
 import com.example.forsamsung012.viewModel.ListScreenViewModel
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlin.system.exitProcess
 
 @SuppressLint(
     "UnusedMaterial3ScaffoldPaddingParameter", "UnusedMaterialScaffoldPaddingParameter",
@@ -90,27 +91,28 @@ fun ListScreen(
 ) {
     val showDialog = remember { mutableStateOf(false) }
     val newListName = remember { mutableStateOf("") }
-    if (listName.value == ""){
-        listScreenViewModel.getFirstListNane()
-    }
 
 
-    listScreenViewModel.getAllObjectsByListName(listName.value)
-    var taskList = listScreenViewModel.li.observeAsState(initial = listOf())
-
+    var taskList = listScreenViewModel.taskList.observeAsState(initial = listOf())
 
     var listNameList: State<List<String>> =
         listScreenViewModel.getAllListName().observeAsState(initial = listOf())
 
-
-    //var taskList = listScreenViewModel.getAllObjects().observeAsState(initial = listOf())
-
-
-    Log.d("getAllObjects", taskList.value.toString())
+    if ((listName.value == "") && (!listNameList.value.isEmpty())) {
+        listName.value = listNameList.value[0]
+    }
+    listScreenViewModel.getAllObjectsByListName(listName.value)
 
 
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
+
+
+    ExitOnBackPressed()
+
+    //val context = LocalContext.current
+    //val lifecycleOwner = LocalLifecycleOwner.current
+
 
     Scaffold(
         floatingActionButton = {
@@ -125,7 +127,6 @@ fun ListScreen(
                     modifier = Modifier.size(30.dp)
                 )
             }
-
         },
         modifier = Modifier.background(color = Color.Red),
         scaffoldState = scaffoldState,
@@ -149,7 +150,6 @@ fun ListScreen(
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
                     androidx.compose.material3.Text(text = "${auth.currentUser!!.email}")
-                    //Text(text = "$logged ${cUser.email}")
                     androidx.compose.material3.Icon(
                         imageVector = Icons.Default.ExitToApp,
                         contentDescription = "Log out",
@@ -203,7 +203,6 @@ fun ListScreen(
         if (showDialog.value) {
             AlertDialog(
                 onDismissRequest = { showDialog.value = false },
-                //title = { androidx.compose.material3.Text("Ввод текста") },
                 text = {
                     TextField(
                         value = newListName.value,
@@ -211,12 +210,19 @@ fun ListScreen(
                         label = { androidx.compose.material3.Text("Название нового списка") }
                     )
                 },
-
                 confirmButton = {
                     Button(
                         onClick = {
-                            listScreenViewModel.insertListName(newListName.value)
-                            showDialog.value = false
+                            if (newListName.value != "") {
+                                listScreenViewModel.insertListName(newListName.value)
+                                showDialog.value = false
+                            } else {
+                                Toast.makeText(
+                                    application,
+                                    "You cannot create a list without a name.",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
                         }
                     ) {
                         androidx.compose.material3.Text("Сохранить")
@@ -239,35 +245,20 @@ fun ListScreen(
         LazyColumn {
 
             items(taskList.value, key = { it.hashCode() }) { item ->
-                //val currentItem by rememberUpdatedState(item)
-                val dismissState = rememberDismissState(//rememberDismissState(
+                val dismissState = rememberDismissState(
                     confirmStateChange = {
                         if (it == DismissValue.DismissedToEnd) {
                             Log.d("deleteObject(item)", item.toString())
                             listScreenViewModel.deleteObject(item)
                             isSwipeRemoved = true
-                        } /*else if (it == DismissValue.DismissedToStart) {
-                            Log.d("deleteObject(item)", item.toString())
-                            listScreenViewModel.deleteObject(item)
-                            //listScreenViewModel.removeUserData(databaseReference,userData)
-                            //userData.value[item.key!!.toInt()]
-                            //Log.d("MYdelete", userData.value.toString())
-                            //itemsList.remove(item)
-                            isSwipeRemoved = true
-                        }*/
+                        }
                         true
                     }
                 )
-
-
-
-
-
                 SwipeToDismiss(
                     state = dismissState,
                     directions = setOf(
-                        DismissDirection.StartToEnd/*,
-                        DismissDirection.EndToStart*/
+                        DismissDirection.StartToEnd
                     ),
                     dismissThresholds = { FractionalThreshold(0.5f) },
                     background = {
@@ -280,18 +271,11 @@ fun ListScreen(
                             }
                         )
 
-                        val icon = Icons.Default.Delete/*when (direction) {
-                            //DismissDirection.EndToStart -> Icons.Default.Done
-                            DismissDirection.StartToEnd -> Icons.Default.Delete
-                        }*/
+                        val icon = Icons.Default.Delete
 
                         val scale by animateFloatAsState(targetValue = if (dismissState.targetValue == DismissValue.Default) 0.8f else 1.2f)
 
-                        val alignment = Alignment.CenterStart/*when (direction) {
-                            //DismissDirection.EndToStart -> Alignment.CenterEnd
-                            DismissDirection.StartToEnd -> Alignment.CenterStart
-                        }*/
-
+                        val alignment = Alignment.CenterStart
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
@@ -329,8 +313,6 @@ fun ListScreen(
                             elevation = animateDpAsState(targetValue = if (dismissState.dismissDirection != null) 4.dp else 0.dp).value
                         ) {
                             Card(
-
-
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .heightIn(110.dp)
@@ -352,10 +334,35 @@ fun ListScreen(
                                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 0.dp),
                                     maxLines = 2
                                 )
+
+
+                                /*BackHandler {
+                                    navController.navigate("SigInScreen")
+                                }*/
                             }
                         }
                     }
                 )
+            }
+        }
+    }
+}
+
+
+@Composable
+fun ExitOnBackPressed() {
+    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    BackHandler {
+        if (lifecycleOwner.lifecycle.currentState == Lifecycle.State.RESUMED) {
+
+            lifecycleOwner.lifecycleScope.launch {
+                Toast.makeText(context, "Press again to exit", Toast.LENGTH_SHORT).show()
+                delay(2000)
+                if (lifecycleOwner.lifecycle.currentState == Lifecycle.State.RESUMED) {
+                    exitProcess(0)
+                }
             }
         }
     }

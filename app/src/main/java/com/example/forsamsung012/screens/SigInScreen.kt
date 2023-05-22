@@ -1,6 +1,7 @@
 package com.example.forsamsung012.screens
 
 import android.content.Context
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,6 +22,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -30,18 +32,21 @@ import androidx.navigation.NavHostController
 import com.example.forsamsung012.viewModel.SignInViewModel
 import com.example.forsamsung012.viewModel.SignUpViewModel
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
+import kotlin.system.exitProcess
 
 @Composable
 fun SigInScreen(
     auth: FirebaseAuth,
     navController: NavHostController,
-    context: Context){
+    context: Context
+) {
 
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
     val signInViewModel: SignInViewModel = SignInViewModel()
     val signUpViewModel: SignUpViewModel = SignUpViewModel()
+
+    val lifecycleOwner = LocalLifecycleOwner.current
 
     Column(
         modifier = Modifier
@@ -98,7 +103,7 @@ fun SigInScreen(
         )
         // Registration button
         Button(onClick = {
-            signUpViewModel.sigUp(email.value,password.value,context)
+            signUpViewModel.sigUp(email.value, password.value, context)
             // Check the registration
             /*if (email.value.isNotEmpty() && password.value.isNotEmpty()) {
                 auth.createUserWithEmailAndPassword(email.value, password.value)
@@ -123,7 +128,7 @@ fun SigInScreen(
         }, modifier = Modifier.padding(top = 5.dp)) { Text(text = "Registered") }
         // SignIn button
         Button(onClick = {
-            signInViewModel.signIn(auth = auth ,email.value, password.value, context, navController)
+            signInViewModel.signIn(auth = auth, email.value, password.value, context, navController)
             // Authorized user login
             /*if (email.value.isNotEmpty() && password.value.isNotEmpty()) {
                 auth.signInWithEmailAndPassword(email.value, password.value)
@@ -151,6 +156,13 @@ fun SigInScreen(
             )*/
         }) {
             Text(text = "Sign in with Google")
+        }
+
+        BackHandler {
+            //if (lifecycleOwner.lifecycle.currentState == Lifecycle.State.RESUMED) {
+            navController.navigate("SigInScreen")
+            exitProcess(0)
+            //}
         }
     }
 }
