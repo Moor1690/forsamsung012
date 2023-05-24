@@ -4,6 +4,7 @@ import android.app.Application
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import com.google.firebase.auth.FirebaseAuth
@@ -224,5 +225,23 @@ class MyRepository(
         )
 
         return userData
+    }
+
+    suspend fun deleteTaskListName(taskListName: TaskListName, listToDelete: List<TaskModel>){
+        val databaseReference2 = Firebase.database("https://forsamsung012-default-rtdb.europe-west1.firebasedatabase.app/").getReference("0/${FirebaseAuth.getInstance().uid}/TASKLISTNAME/" + taskListName.taskListNameId)
+        databaseReference2.removeValue()
+/*        Log.d("taskListName.name",taskListName.name)
+        var listToDelete = taskDAO.taskListToDelete(taskListName.name).observeAsState(initial = listOf())
+        Log.d("soutMy1", listToDelete.value.toString())
+
+        */Log.d("soutMy2", listToDelete.toString())
+        if (listToDelete != null) {
+            Log.d("soutMy3", listToDelete.toString())
+            for (value in listToDelete){
+                val databaseReference3 = Firebase.database("https://forsamsung012-default-rtdb.europe-west1.firebasedatabase.app/").getReference("0/${FirebaseAuth.getInstance().uid}/TASK/" + value.key)
+                databaseReference3.removeValue()
+            }
+        }
+        taskDAO.deleteTaskListName(taskListName)
     }
 }

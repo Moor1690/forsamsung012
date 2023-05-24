@@ -1,6 +1,7 @@
 package com.example.forsamsung012.viewModel
 
 import android.app.Application
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
@@ -16,7 +17,9 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.time.LocalTime
 
 class ListScreenViewModel(application: Application) :
     AndroidViewModel(application) {
@@ -24,6 +27,7 @@ class ListScreenViewModel(application: Application) :
     val taskDAO = TaskDatabase.getDatabase(context = application).taskDAO()
 
     var taskList: LiveData<List<TaskModel>> = foo()
+    var taskListToDelete: List<TaskModel> = mutableListOf()//getAllObjectsByListNameToDelete("")
     var myR = MyRepository(application, FirebaseAuth.getInstance())
 
     fun getAllTaskListName():LiveData<List<TaskListName>>{
@@ -55,6 +59,13 @@ class ListScreenViewModel(application: Application) :
             taskList = taskDAO.getAllTaskModelByListName(listName)
         }
     }
+/*    fun getAllObjectsByListNameToDelete(listName: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            Log.d("taskListToDelete", taskListToDelete.toString())
+            taskListToDelete = taskDAO.getAllTaskModelByListName2(listName)
+            Log.d("taskListToDelete", taskListToDelete.toString())
+        }
+    }*/
 
 
     fun deleteObject(taskModel: TaskModel) {
@@ -84,6 +95,13 @@ class ListScreenViewModel(application: Application) :
         val databaseReference = database.getReference("0/${auth.uid}/TASK/")
         database.getReference("0/${auth.uid}/TASK/-NVAqmQ7jjnYTDEsC954").removeValue()
 
+    }
+
+
+    fun deleteTaskListName(taskListName: TaskListName){
+        viewModelScope.launch(Dispatchers.IO) {
+            myR.deleteTaskListName(taskListName = taskListName, listToDelete = taskDAO.getAllTaskModelByListName2(taskListName.name))
+        }
     }
 
 }

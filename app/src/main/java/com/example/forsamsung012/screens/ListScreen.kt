@@ -71,10 +71,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import com.example.forsamsung012.MainActivity
 import com.example.forsamsung012.bar.MyAppBar
+import com.example.forsamsung012.model.TaskListName
 import com.example.forsamsung012.viewModel.ListScreenViewModel
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.time.LocalTime
 import kotlin.system.exitProcess
 
 @SuppressLint(
@@ -95,12 +97,18 @@ fun ListScreen(
 
 
     var taskList = listScreenViewModel.taskList.observeAsState(initial = listOf())
+    Log.d("taskList", taskList.value.toString())
+    Log.d("LocalTime", LocalTime.now().toString())
+    var listToDelete = listScreenViewModel.taskListToDelete
 
-    var listNameList: State<List<String>> =
-        listScreenViewModel.getAllListName().observeAsState(initial = listOf())
+    var listNameList: State<List<TaskListName>> =
+        listScreenViewModel.getAllTaskListName().observeAsState(initial = listOf())
 
     if ((listName.value == "") && (!listNameList.value.isEmpty())) {
-        listName.value = listNameList.value[0]
+        listName.value = listNameList.value[0].name
+    }
+    if(listNameList.value.isEmpty()){
+        listName.value = ""
     }
     listScreenViewModel.getAllObjectsByListName(listName.value)
 
@@ -172,14 +180,28 @@ fun ListScreen(
                                 .heightIn(60.dp)
                                 .padding(8.dp)
                                 .clickable {
-                                    listName.value = item
+                                    listName.value = item.name
                                 }
                         ) {
-                            Text(
-                                text = item,
-                                fontSize = 20.sp,
-                                modifier = Modifier.padding(start = 18.dp, top = 8.dp)
-                            )
+                            Row {
+                                Text(
+                                    text = item.name,
+                                    fontSize = 20.sp,
+                                    modifier = Modifier.padding(start = 18.dp, top = 8.dp).weight(1f)
+                                )
+                                Icon(
+                                    imageVector = Icons.Default.Delete,
+                                    contentDescription = "delete list",
+                                    modifier = Modifier.padding(end = 18.dp, top = 8.dp)
+                                        .clickable {
+                                            //listScreenViewModel.getAllObjectsByListNameToDelete(item.name)
+                                            Log.d("listToDelete",listToDelete.toString())
+                                            listScreenViewModel.deleteTaskListName(item)
+                                            //listName.value = item
+                                        }
+                                )
+                            }
+
                         }
                     }
                 }
@@ -198,6 +220,7 @@ fun ListScreen(
                         modifier = Modifier.padding(start = 18.dp, top = 8.dp),
                         textAlign = TextAlign.Center
                     )
+
                 }
             }
 

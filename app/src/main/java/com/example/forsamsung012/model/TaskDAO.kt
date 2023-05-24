@@ -16,6 +16,8 @@ interface TaskDAO {
     @Query("SELECT taskModel.* FROM taskModel JOIN taskListName ON taskModel.taskListNameKey = taskListName.taskListNameId Where taskListName.name = :listName")
     fun getAllTaskModelByListName(listName: String): LiveData<List<TaskModel>>
 
+    @Query("SELECT taskModel.* FROM taskModel JOIN taskListName ON taskModel.taskListNameKey = taskListName.taskListNameId Where taskListName.name = :listName")
+    fun getAllTaskModelByListName2(listName: String): List<TaskModel>
 
     @Query("SELECT DISTINCT name FROM taskListName")
     fun getAllNameTaskListName(): LiveData<List<String>>
@@ -34,6 +36,9 @@ interface TaskDAO {
 
     @Delete
     fun deleteTaskModel(taskModel: TaskModel)
+
+    @Delete
+    fun deleteTaskListName(taskListName: TaskListName)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertListName(taskListName: TaskListName)
