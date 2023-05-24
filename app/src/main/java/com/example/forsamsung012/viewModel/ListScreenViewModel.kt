@@ -1,10 +1,13 @@
 package com.example.forsamsung012.viewModel
 
 import android.app.Application
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
+import com.example.forsamsung012.model.MyRepository
 import com.example.forsamsung012.model.TaskDatabase
 import com.example.forsamsung012.model.TaskListName
 import com.example.forsamsung012.model.TaskModel
@@ -21,6 +24,22 @@ class ListScreenViewModel(application: Application) :
     val taskDAO = TaskDatabase.getDatabase(context = application).taskDAO()
 
     var taskList: LiveData<List<TaskModel>> = foo()
+    var myR = MyRepository(application, FirebaseAuth.getInstance())
+
+    fun getAllTaskListName():LiveData<List<TaskListName>>{
+        return taskDAO.getAllTaskListName()
+    }
+    fun check(): LiveData<List<TaskModel>>{
+        //viewModelScope.launch(Dispatchers.IO) {
+        return taskDAO.getAllTaskModel()
+        //}
+    }
+    fun check2(che: State<List<TaskModel>>, che2:State<List<TaskListName>>){
+        viewModelScope.launch(Dispatchers.IO) {
+            myR.check(che, che2)
+        }
+    }
+
     fun foo(): LiveData<List<TaskModel>> {
         return taskDAO.getAllTaskModelByListName("")
     }
@@ -40,6 +59,7 @@ class ListScreenViewModel(application: Application) :
 
     fun deleteObject(taskModel: TaskModel) {
         viewModelScope.launch(Dispatchers.IO) {
+            myR.removeUserData(taskModel.key)
             taskDAO.deleteTaskModel(taskModel)
         }
     }
@@ -50,7 +70,7 @@ class ListScreenViewModel(application: Application) :
 
     fun insertListName(name: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            taskDAO.insertListName(TaskListName(name = name))
+            myR.insertListName(TaskListName(name = name))
         }
     }
 

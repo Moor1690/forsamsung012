@@ -67,6 +67,7 @@ fun TaskScreen(
                             listName
                         )
                     }
+                    navController.navigate("ListScreen")
                 }, modifier = Modifier
                     .clip(CircleShape)
                     .size(50.dp)

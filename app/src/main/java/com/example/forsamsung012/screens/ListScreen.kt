@@ -53,6 +53,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -107,6 +108,9 @@ fun ListScreen(
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
 
+    var che = listScreenViewModel.check().observeAsState(initial = listOf())
+    var nameTaskListFromRoom = listScreenViewModel.getAllTaskListName().observeAsState(initial = listOf())
+    listScreenViewModel.check2(che,nameTaskListFromRoom)
 
     ExitOnBackPressed()
 
@@ -350,20 +354,21 @@ fun ListScreen(
 
 
 @Composable
-fun ExitOnBackPressed() {
+fun ExitOnBackPressed(backPressedOnce:MutableState<Boolean> = rememberSaveable { mutableStateOf(false) }) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
+
     BackHandler {
-        if (lifecycleOwner.lifecycle.currentState == Lifecycle.State.RESUMED) {
+        if (!backPressedOnce.value) {
 
             lifecycleOwner.lifecycleScope.launch {
                 Toast.makeText(context, "Press again to exit", Toast.LENGTH_SHORT).show()
+                backPressedOnce.value = true
                 delay(2000)
-                if (lifecycleOwner.lifecycle.currentState == Lifecycle.State.RESUMED) {
-                    exitProcess(0)
-                }
+                backPressedOnce.value = false
+
             }
-        }
+        } else {exitProcess(0)}
     }
 }
