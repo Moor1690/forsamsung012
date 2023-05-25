@@ -2,6 +2,7 @@ package com.example.forsamsung012.viewModel
 
 import android.app.Application
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.runtime.MutableState
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -18,6 +19,7 @@ class TaskScreenViewModel(
 ) : AndroidViewModel(application) {
 
     val taskDAO = TaskDatabase.getDatabase(context = application).taskDAO()
+    val application2 = application
     //val database = Firebase.database("https://forsamsung012-default-rtdb.europe-west1.firebasedatabase.app/")
     //private val databaseReference = Firebase.database("https://forsamsung012-default-rtdb.europe-west1.firebasedatabase.app/").getReference("0/${FirebaseAuth.getInstance().uid}/TASK/")
 
@@ -31,7 +33,10 @@ class TaskScreenViewModel(
             Log.d("listNameSOUT", listName.value)
             var id = taskDAO.getAllNameTaskListName(listName.value).taskListNameId
             myR.insertObject(taskName, taskDescription, listName, id)
+
         }
+        Toast.makeText(application2, "Data successful save.", Toast.LENGTH_SHORT)
+            .show()
     }
 
     fun updateObject(
@@ -51,6 +56,8 @@ class TaskScreenViewModel(
                 )
             )
         }
+        Toast.makeText(application2, "Data successful update.", Toast.LENGTH_SHORT)
+            .show()
     }
 
 

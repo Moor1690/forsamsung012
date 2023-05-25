@@ -1,6 +1,8 @@
 package com.example.forsamsung012.screens
 
 import android.content.Context
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -10,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.SnackbarDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.Button
@@ -51,9 +54,10 @@ fun SigInScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(SnackbarDefaults.backgroundColor)
             .imePadding(),
         // parameters set to place the items in center
+
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -91,7 +95,7 @@ fun SigInScreen(
             onValueChange = { newText -> password.value = newText },
             modifier = Modifier
                 .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.background)
+                .background(SnackbarDefaults.backgroundColor)//MaterialTheme.colorScheme.background)
                 .imePadding(),
             label = { Text(text = "Password") },
             visualTransformation = PasswordVisualTransformation(),
@@ -128,7 +132,18 @@ fun SigInScreen(
         }, modifier = Modifier.padding(top = 5.dp)) { Text(text = "Registered") }
         // SignIn button
         Button(onClick = {
-            signInViewModel.signIn(auth = auth, email.value, password.value, context, navController)
+            if (email.value == "" || password.value == ""){
+                Toast.makeText(context, "Please enter email and password.", Toast.LENGTH_SHORT).show()
+            }else {
+                Log.d("email and password", email.value + "\t" + password.value)
+                signInViewModel.signIn(
+                    auth = auth,
+                    email.value,
+                    password.value,
+                    context,
+                    navController
+                )
+            }
             // Authorized user login
             /*if (email.value.isNotEmpty() && password.value.isNotEmpty()) {
                 auth.signInWithEmailAndPassword(email.value, password.value)
@@ -148,15 +163,7 @@ fun SigInScreen(
                 ).show()
             }*/
         }) { Text(text = "Sign in") }
-        // SignIn button
-        Button(onClick = {/*
-            signInWithGoogle(
-                googleSignInClient = googleSignInClient,
-                startForResultSignIn = startForResultSignIn
-            )*/
-        }) {
-            Text(text = "Sign in with Google")
-        }
+
 
         BackHandler {
             //if (lifecycleOwner.lifecycle.currentState == Lifecycle.State.RESUMED) {

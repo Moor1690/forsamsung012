@@ -2,6 +2,7 @@ package com.example.forsamsung012.navigate
 
 import android.annotation.SuppressLint
 import android.app.Application
+import android.content.Context
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -30,6 +31,8 @@ fun Navigate(
     application: Application,
     auth: FirebaseAuth,
     navController: NavHostController,
+    context: Context
+
 ) {
     Forsamsung012Theme {
         var start: String
@@ -65,7 +68,8 @@ fun Navigate(
                         taskDescription = taskDescription,
                         taskModelId = backStackEntry.arguments?.getString("taskModelId"),
                         taskScreenViewModel = taskScreenViewModel,
-                        navController = navController
+                        navController = navController,
+                        context = context
                     )
                 }
                 composable(route = "TaskScreen") {
@@ -75,7 +79,8 @@ fun Navigate(
                         taskDescription = mutableStateOf(""),
                         taskModelId = "",
                         taskScreenViewModel = taskScreenViewModel,
-                        navController = navController
+                        navController = navController,
+                        context = context
                     )
                 }
             }

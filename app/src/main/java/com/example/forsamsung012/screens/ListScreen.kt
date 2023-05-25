@@ -292,9 +292,9 @@ fun ListScreen(
                         val direction = dismissState.dismissDirection ?: return@SwipeToDismiss
                         val color by animateColorAsState(
                             targetValue = when (dismissState.targetValue) {
-                                DismissValue.Default -> Color.LightGray
-                                DismissValue.DismissedToEnd -> Color.Red
-                                DismissValue.DismissedToStart -> Color.DarkGray
+                                DismissValue.Default -> backgroundColor
+                                DismissValue.DismissedToEnd -> backgroundColor
+                                DismissValue.DismissedToStart -> backgroundColor
                             }
                         )
 

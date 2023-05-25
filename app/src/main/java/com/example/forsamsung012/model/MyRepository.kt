@@ -4,7 +4,6 @@ import android.app.Application
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import com.google.firebase.auth.FirebaseAuth
@@ -14,7 +13,6 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.delay
 import java.time.LocalDateTime
 
 class MyRepository(
@@ -121,43 +119,32 @@ class MyRepository(
         val databaseReference = database.getReference("0/${FirebaseAuth.getInstance().uid}/TASK/")
         nameTaskListFromFirebase = getAllTaskListName(nameTaskListFromFirebase)
         dataFromFirebase = getUserData(databaseReference, dataFromFirebase)
+        if(!nameTaskListFromFirebase.value.isEmpty() && !nameTaskListFromRoom.value.isEmpty()){
+            if(nameTaskListFromFirebase.value.isEmpty() || (nameTaskListFromFirebase.value.size < nameTaskListFromRoom.value.size)){
+                for (value in nameTaskListFromRoom.value){
+                    Firebase.database("https://forsamsung012-default-rtdb.europe-west1.firebasedatabase.app/").getReference("0/${FirebaseAuth.getInstance().uid}/TASKLISTNAME/" + value.taskListNameId).setValue(value)
+                }
 
-        delay(500)
-        Log.d("che.toString()",dataFromRoom.value.toString())
-        Log.d("che2.value.toString()",dataFromFirebase.value.toString())
-        var i = 0
 
-
-        if(nameTaskListFromFirebase.value.size > nameTaskListFromRoom.value.size){
-            for (value in nameTaskListFromFirebase.value){
-                taskDAO.insertListName(value)
+            } else{
+                for (value in nameTaskListFromFirebase.value){
+                    taskDAO.insertListName(value)
+                }
             }
-        } else{
-            for (value in nameTaskListFromRoom.value){
-                val databaseReference2 = Firebase.database("https://forsamsung012-default-rtdb.europe-west1.firebasedatabase.app/").getReference("0/${FirebaseAuth.getInstance().uid}/TASKLISTNAME/" + value.taskListNameId)
-                databaseReference2.setValue(value)
+            if (dataFromFirebase.value.size > dataFromRoom.value.size){
+
+                for (value in dataFromFirebase.value){
+                    taskDAO.insertTaskModel(value)
+                }
             }
-        }
-
-        if (dataFromFirebase.value.size > dataFromRoom.value.size){
-
-            for (value in dataFromFirebase.value){
-                val databaseReference2 =
+            else{
+                for (value in dataFromRoom.value){
                     Firebase.database("https://forsamsung012-default-rtdb.europe-west1.firebasedatabase.app/")
-                        .getReference("0/${FirebaseAuth.getInstance().uid}/TASK/" + value.key)
-                Log.d("value.key",value.toString())
-                //databaseReference.setValue(value)
-
-
-                taskDAO.insertTaskModel(value)
+                        .getReference("0/${FirebaseAuth.getInstance().uid}/TASK/" + value.key).setValue(value)
+                }
             }
-
-
-            //update date from firebase
         }
-        else{
-            //update date from room
-        }
+
 
     }
 
@@ -230,17 +217,9 @@ class MyRepository(
     suspend fun deleteTaskListName(taskListName: TaskListName, listToDelete: List<TaskModel>){
         val databaseReference2 = Firebase.database("https://forsamsung012-default-rtdb.europe-west1.firebasedatabase.app/").getReference("0/${FirebaseAuth.getInstance().uid}/TASKLISTNAME/" + taskListName.taskListNameId)
         databaseReference2.removeValue()
-/*        Log.d("taskListName.name",taskListName.name)
-        var listToDelete = taskDAO.taskListToDelete(taskListName.name).observeAsState(initial = listOf())
-        Log.d("soutMy1", listToDelete.value.toString())
-
-        */Log.d("soutMy2", listToDelete.toString())
-        if (listToDelete != null) {
-            Log.d("soutMy3", listToDelete.toString())
-            for (value in listToDelete){
-                val databaseReference3 = Firebase.database("https://forsamsung012-default-rtdb.europe-west1.firebasedatabase.app/").getReference("0/${FirebaseAuth.getInstance().uid}/TASK/" + value.key)
-                databaseReference3.removeValue()
-            }
+        for (value in listToDelete){
+            val databaseReference3 = Firebase.database("https://forsamsung012-default-rtdb.europe-west1.firebasedatabase.app/").getReference("0/${FirebaseAuth.getInstance().uid}/TASK/" + value.key)
+            databaseReference3.removeValue()
         }
         taskDAO.deleteTaskListName(taskListName)
     }

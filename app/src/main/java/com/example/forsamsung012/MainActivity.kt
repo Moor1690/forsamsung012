@@ -11,6 +11,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import com.example.forsamsung012.navigate.Navigate
 import com.example.forsamsung012.ui.theme.Forsamsung012Theme
@@ -52,7 +53,8 @@ class MainActivity : ComponentActivity() {
                         listScreenViewModel = listScreenViewModel,
                         auth = auth,
                         application = application,
-                        navController = navController
+                        navController = navController,
+                        context = LocalContext.current
                     )
                 }
             }

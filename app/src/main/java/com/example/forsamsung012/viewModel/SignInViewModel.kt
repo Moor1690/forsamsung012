@@ -1,6 +1,7 @@
 package com.example.forsamsung012.viewModel
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.navigation.NavHostController
 import com.google.firebase.auth.FirebaseAuth
@@ -26,6 +27,7 @@ class SignInViewModel {
                             .show()
                         navController.navigate("ListScreen")
                     } else {
+                        Log.d("email and password", email + "\t" + password)
                         Toast.makeText(cont, "Authentication failed.", Toast.LENGTH_SHORT).show()
                     }
                 }
