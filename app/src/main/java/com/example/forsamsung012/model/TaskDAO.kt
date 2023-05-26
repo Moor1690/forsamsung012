@@ -12,6 +12,8 @@ import androidx.room.Update
 interface TaskDAO {
     @Query("SELECT * FROM taskModel")
     fun getAllTaskModel(): LiveData<List<TaskModel>>
+    @Query("SELECT * FROM taskModel")
+    fun getAllTaskModelL(): List<TaskModel>
 
     @Query("SELECT taskModel.* FROM taskModel JOIN taskListName ON taskModel.taskListNameKey = taskListName.taskListNameId Where taskListName.name = :listName")
     fun getAllTaskModelByListName(listName: String): LiveData<List<TaskModel>>
@@ -45,6 +47,9 @@ interface TaskDAO {
 
     @Query("SELECT * FROM taskListName")
     fun getAllTaskListName(): LiveData<List<TaskListName>>
+
+    @Query("SELECT * FROM taskListName")
+    fun getAllTaskListNameL(): List<TaskListName>
 
     @Query("SELECT * FROM taskListName WHERE name =:name")
     fun getAllNameTaskListName(name: String): TaskListName

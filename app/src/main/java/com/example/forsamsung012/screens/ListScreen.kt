@@ -66,7 +66,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import com.example.forsamsung012.MainActivity
@@ -116,9 +115,11 @@ fun ListScreen(
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
 
-    var che = listScreenViewModel.check().observeAsState(initial = listOf())
-    var nameTaskListFromRoom = listScreenViewModel.getAllTaskListName().observeAsState(initial = listOf())
-    listScreenViewModel.check2(che,nameTaskListFromRoom)
+    //var che = listScreenViewModel.check().observeAsState(initial = listOf())
+    //var nameTaskListFromRoom = listScreenViewModel.getAllTaskListName().observeAsState(initial = listOf())
+    listScreenViewModel.check()
+    //var userData: MutableState<List<String>> = mutableStateOf(listOf())
+    //listScreenViewModel.checkFB(userData)
 
     ExitOnBackPressed()
 

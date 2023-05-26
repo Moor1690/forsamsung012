@@ -1,10 +1,7 @@
 package com.example.forsamsung012.viewModel
 
 import android.app.Application
-import android.util.Log
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
@@ -17,9 +14,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.time.LocalTime
 
 class ListScreenViewModel(application: Application) :
     AndroidViewModel(application) {
@@ -33,14 +28,14 @@ class ListScreenViewModel(application: Application) :
     fun getAllTaskListName():LiveData<List<TaskListName>>{
         return taskDAO.getAllTaskListName()
     }
-    fun check(): LiveData<List<TaskModel>>{
+    fun getAllTaskModel(): LiveData<List<TaskModel>>{
         //viewModelScope.launch(Dispatchers.IO) {
         return taskDAO.getAllTaskModel()
         //}
     }
-    fun check2(che: State<List<TaskModel>>, che2:State<List<TaskListName>>){
+    fun check(){
         viewModelScope.launch(Dispatchers.IO) {
-            myR.check(che, che2)
+            myR.check(dataFromRoom = taskDAO.getAllTaskModelL(),nameTaskListFromRoom =  taskDAO.getAllTaskListNameL())
         }
     }
 

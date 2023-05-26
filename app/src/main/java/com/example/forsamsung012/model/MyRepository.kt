@@ -14,6 +14,7 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import java.time.LocalDateTime
+import kotlin.properties.Delegates
 
 class MyRepository(
     application: Application,
@@ -111,20 +112,38 @@ class MyRepository(
         database.getReference("0/${FirebaseAuth.getInstance().uid}/TASK/" + key.toString()).removeValue()
     }
 
-    suspend fun check(dataFromRoom: State<List<TaskModel>>, nameTaskListFromRoom:State<List<TaskListName>>){
+    suspend fun check(dataFromRoom: List<TaskModel>, nameTaskListFromRoom: List<TaskListName>){
 
 
-        var dataFromFirebase : MutableState<List<TaskModel>> = mutableStateOf<List<TaskModel>>(listOf())
+        //var dataFromFirebase : MutableState<List<TaskModel>> = mutableStateOf<List<TaskModel>>(listOf())
         var nameTaskListFromFirebase: MutableState<List<TaskListName>> = mutableStateOf<List<TaskListName>>(listOf())
-        val databaseReference = database.getReference("0/${FirebaseAuth.getInstance().uid}/TASK/")
+        //val databaseReference = database.getReference("0/${FirebaseAuth.getInstance().uid}/TASK/")
         nameTaskListFromFirebase = getAllTaskListName(nameTaskListFromFirebase)
-        dataFromFirebase = getUserData(databaseReference, dataFromFirebase)
-        if(!nameTaskListFromFirebase.value.isEmpty() && !nameTaskListFromRoom.value.isEmpty()){
-            if(nameTaskListFromFirebase.value.isEmpty() || (nameTaskListFromFirebase.value.size < nameTaskListFromRoom.value.size)){
-                for (value in nameTaskListFromRoom.value){
-                    Firebase.database("https://forsamsung012-default-rtdb.europe-west1.firebasedatabase.app/").getReference("0/${FirebaseAuth.getInstance().uid}/TASKLISTNAME/" + value.taskListNameId).setValue(value)
-                }
+        //dataFromFirebase = getUserData(databaseReference, dataFromFirebase)
 
+        Log.d("nameTaskListFromFirebase.size", nameTaskListFromFirebase.value.size.toString())
+        Log.d("nameTaskListFromRoom.size", nameTaskListFromRoom.size.toString())
+
+        if(!checkFB() && nameTaskListFromRoom.isNotEmpty()){
+            if(nameTaskListFromFirebase.value.size < nameTaskListFromRoom.size) {
+                Log.d("nameTaskListFromFirebase.value.size <", nameTaskListFromFirebase.value.toString())
+                for (value in nameTaskListFromRoom) {
+                    getDataFromRoom(nameTaskListFromRoom)
+                }
+            } else{
+                getDataFromFirebase(nameTaskListFromFirebase)
+            }
+        } else if (!checkFB() && nameTaskListFromRoom.isEmpty()){
+            getDataFromFirebase(nameTaskListFromFirebase)
+        } else if(checkFB() && nameTaskListFromRoom.isNotEmpty()){
+            getDataFromRoom(nameTaskListFromRoom)
+        }
+
+        /*if(!nameTaskListFromFirebase.value.isEmpty() && !nameTaskListFromRoom.value.isEmpty()){
+            if(nameTaskListFromFirebase.value.size < nameTaskListFromRoom.value.size){
+                for (value in nameTaskListFromRoom.value){
+                    getDataFromRoom(nameTaskListFromRoom)
+                }
 
             } else{
                 for (value in nameTaskListFromFirebase.value){
@@ -143,12 +162,45 @@ class MyRepository(
                         .getReference("0/${FirebaseAuth.getInstance().uid}/TASK/" + value.key).setValue(value)
                 }
             }
-        }
+        }*/
 
 
     }
+    private fun getDataFromRoom(nameTaskListFromRoom: List<TaskListName>){
+        for (value in nameTaskListFromRoom){
+            Firebase.database("https://forsamsung012-default-rtdb.europe-west1.firebasedatabase.app/").getReference("0/${FirebaseAuth.getInstance().uid}/TASKLISTNAME/" + value.taskListNameId).setValue(value)
+        }
+    }
+    private fun getDataFromFirebase(nameTaskListFromFirebase: MutableState<List<TaskListName>>){
+        for (value in nameTaskListFromFirebase.value){
+            taskDAO.insertListName(value)
+        }
+    }
 
-    suspend fun getAllTaskListName( userData: MutableState<List<TaskListName>> ) : MutableState<List<TaskListName>>{
+    private suspend fun checkFB() : Boolean{
+        val databaseReference = Firebase.database("https://forsamsung012-default-rtdb.europe-west1.firebasedatabase.app/").getReference("0/${FirebaseAuth.getInstance().uid}/" )
+        var b:Boolean = true
+        databaseReference.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    // Записи существуют по указанному пути
+                    b = false
+                    Log.d("TAG123", "Записи существуют по указанному пути.")
+                } else {
+                    b = true
+                    // Записи не существуют по указанному пути
+                    Log.d("TAG123", "Записи не существуют по указанному пути.")
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.w("TAG123", "Ошибка при чтении данных.", error.toException())
+            }
+        })
+        return b
+    }
+
+    private suspend fun getAllTaskListName(userData: MutableState<List<TaskListName>> ) : MutableState<List<TaskListName>>{
         val databaseReference = Firebase.database("https://forsamsung012-default-rtdb.europe-west1.firebasedatabase.app/").getReference("0/${FirebaseAuth.getInstance().uid}/TASKLISTNAME/")
         //Log.d("TAG", "getUserData")
         databaseReference.addValueEventListener(
