@@ -13,6 +13,7 @@ import com.example.forsamsung012.screens.SigInScreen
 import com.example.forsamsung012.screens.TaskScreen
 import com.example.forsamsung012.ui.theme.Forsamsung012Theme
 import com.example.forsamsung012.viewModel.ListScreenViewModel
+import com.example.forsamsung012.viewModel.SignInViewModel
 import com.example.forsamsung012.viewModel.TaskScreenViewModel
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
@@ -28,6 +29,7 @@ fun Navigate(
     taskDescription: MutableState<String>,
     taskScreenViewModel: TaskScreenViewModel,
     listScreenViewModel: ListScreenViewModel,
+    signInViewModel: SignInViewModel,
     application: Application,
     auth: FirebaseAuth,
     navController: NavHostController,
@@ -49,7 +51,8 @@ fun Navigate(
                     SigInScreen(
                         auth = auth,
                         navController = navController,
-                        context = application
+                        context = application,
+                        signInViewModel = signInViewModel
                     )
                 }
                 composable(route = "ListScreen") {

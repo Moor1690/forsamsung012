@@ -32,6 +32,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.forsamsung012.viewModel.ListScreenViewModel
 import com.example.forsamsung012.viewModel.SignInViewModel
 import com.example.forsamsung012.viewModel.SignUpViewModel
 import com.google.firebase.auth.FirebaseAuth
@@ -40,13 +41,14 @@ import kotlin.system.exitProcess
 @Composable
 fun SigInScreen(
     auth: FirebaseAuth,
+    signInViewModel: SignInViewModel,
     navController: NavHostController,
     context: Context
 ) {
 
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
-    val signInViewModel: SignInViewModel = SignInViewModel()
+    //val signInViewModel: SignInViewModel = SignInViewModel()
     val signUpViewModel: SignUpViewModel = SignUpViewModel()
 
     val lifecycleOwner = LocalLifecycleOwner.current

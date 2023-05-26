@@ -16,6 +16,7 @@ import androidx.navigation.NavHostController
 import com.example.forsamsung012.navigate.Navigate
 import com.example.forsamsung012.ui.theme.Forsamsung012Theme
 import com.example.forsamsung012.viewModel.ListScreenViewModel
+import com.example.forsamsung012.viewModel.SignInViewModel
 import com.example.forsamsung012.viewModel.TaskScreenViewModel
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.firebase.auth.FirebaseAuth
@@ -26,7 +27,7 @@ class MainActivity : ComponentActivity() {
 
     private lateinit var listScreenViewModel: ListScreenViewModel
     private lateinit var taskScreenViewModel: TaskScreenViewModel
-
+    private lateinit var signInViewModel: SignInViewModel
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     @OptIn(ExperimentalAnimationApi::class, ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,6 +42,7 @@ class MainActivity : ComponentActivity() {
                 val navController: NavHostController = rememberAnimatedNavController()
                 listScreenViewModel = ListScreenViewModel(application)
                 taskScreenViewModel = TaskScreenViewModel(application = application, auth = auth)
+                signInViewModel = SignInViewModel(application)
                 Scaffold(
                     modifier = Modifier.fillMaxSize()
                 ) {
@@ -51,6 +53,7 @@ class MainActivity : ComponentActivity() {
                         taskDescription = taskDescription,
                         taskScreenViewModel = taskScreenViewModel,
                         listScreenViewModel = listScreenViewModel,
+                        signInViewModel = signInViewModel,
                         auth = auth,
                         application = application,
                         navController = navController,

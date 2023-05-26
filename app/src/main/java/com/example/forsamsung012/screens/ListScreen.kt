@@ -117,7 +117,7 @@ fun ListScreen(
 
     //var che = listScreenViewModel.check().observeAsState(initial = listOf())
     //var nameTaskListFromRoom = listScreenViewModel.getAllTaskListName().observeAsState(initial = listOf())
-    listScreenViewModel.check()
+    //listScreenViewModel.check()
     //var userData: MutableState<List<String>> = mutableStateOf(listOf())
     //listScreenViewModel.checkFB(userData)
 
