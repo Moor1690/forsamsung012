@@ -70,7 +70,7 @@ fun TaskScreen(
             Column(
                 //modifier = Modifier.height(200.dp)
             ) {
-                Box(modifier = Modifier.padding(bottom = 16.dp)) {
+                /*Box(modifier = Modifier.padding(bottom = 16.dp)) {
                     FloatingActionButton(
                         onClick = {
                             DatePickerDialog(
@@ -97,7 +97,7 @@ fun TaskScreen(
                             modifier = Modifier.size(30.dp)
                         )
                     }
-                }
+                }*/
 
 
                 FloatingActionButton(
