@@ -9,6 +9,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -108,7 +109,7 @@ class MyRepository(
 
 
     suspend fun removeUserData(key:Long){
-        val database = Firebase.database("https://forsamsung012-default-rtdb.europe-west1.firebasedatabase.app/")
+        val database :FirebaseDatabase = Firebase.database("https://forsamsung012-default-rtdb.europe-west1.firebasedatabase.app/")
         val databaseReference = database.getReference("0/${FirebaseAuth.getInstance().uid}/TASK/")
         database.getReference("0/${FirebaseAuth.getInstance().uid}/TASK/" + key.toString()).removeValue()
     }

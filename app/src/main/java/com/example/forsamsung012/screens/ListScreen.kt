@@ -94,6 +94,7 @@ fun ListScreen(
     val showDialog = remember { mutableStateOf(false) }
     val newListName = remember { mutableStateOf("") }
 
+    Log.d("listName",listName.value)
 
     var taskList = listScreenViewModel.taskList.observeAsState(initial = listOf())
     Log.d("taskList", taskList.value.toString())
@@ -106,9 +107,10 @@ fun ListScreen(
     if ((listName.value == "") && (!listNameList.value.isEmpty())) {
         listName.value = listNameList.value[0].name
     }
-    if(listNameList.value.isEmpty()){
+    /*if(listNameList.value.isEmpty()){
+        Log.d("if2", listName.value)
         listName.value = ""
-    }
+    }*/
     listScreenViewModel.getAllObjectsByListName(listName.value)
 
 
